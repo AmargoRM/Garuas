@@ -147,35 +147,24 @@
   </section>
 
   <!-- CONTACTO -->
-  <section id="contacto">
-    <div class="mx-auto max-w-6xl px-4 py-16">
-      <h2 class="text-3xl font-extrabold">Contacto</h2>
-      <p class="mt-2 text-slate-600">Respondemos en 24 horas hábiles.</p>
+  <form action="https://formspree.io/f/mwpqavdr" method="POST" class="rounded-2xl border p-6 bg-white">
+  <div class="grid grid-cols-1 gap-4">
+    <input class="rounded-xl border p-3" name="name" placeholder="Nombre" required />
+    <input class="rounded-xl border p-3" name="email" placeholder="Correo" type="email" required />
+    <input class="rounded-xl border p-3" name="phone" placeholder="Teléfono / WhatsApp" />
+    <textarea class="rounded-xl border p-3 min-h-[120px]" name="message" placeholder="¿En qué podemos ayudarte?" required></textarea>
 
-      <div class="mt-8 grid md:grid-cols-2 gap-8">
-        <form class="rounded-2xl border p-6 bg-white">
-          <div class="grid grid-cols-1 gap-4">
-            <input class="rounded-xl border p-3" placeholder="Nombre" />
-            <input class="rounded-xl border p-3" placeholder="Correo" type="email" />
-            <input class="rounded-xl border p-3" placeholder="Teléfono / WhatsApp" />
-            <textarea class="rounded-xl border p-3 min-h-[120px]" placeholder="¿En qué podemos ayudarte?"></textarea>
-            <button type="button" class="rounded-2xl bg-teal-700 px-5 py-3 text-white font-semibold w-max">Enviar</button>
-            <p class="text-xs text-slate-500">* Integraremos Formspree/EmailJS para envíos reales.</p>
-          </div>
-        </form>
+    <!-- Asunto del correo -->
+    <input type="hidden" name="_subject" value="Nuevo contacto desde garuas.com">
+    <!-- Anti-spam -->
+    <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off">
 
-        <div class="rounded-2xl border p-6 bg-slate-50">
-          <div class="space-y-3 text-slate-700">
-            <div><span class="font-semibold">Correo:</span> <a class="text-teal-700 hover:underline" href="mailto:info@garuas.com">info@garuas.com</a></div>
-            <div><span class="font-semibold">WhatsApp:</span> <a class="text-teal-700 hover:underline" href="https://wa.me/50686842522" target="_blank" rel="noreferrer">+506 8684 2522</a></div>
-            <div><span class="font-semibold">Horario:</span> Lun–Vie 8:00–17:00</div>
-            <div class="pt-2 text-sm">¿Preferís hablar ahora? Escríbenos por WhatsApp y agendamos una visita técnica.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
+    <button class="rounded-2xl bg-teal-700 px-5 py-3 text-white font-semibold w-max" type="submit">
+      Enviar
+    </button>
+    <p class="text-xs text-slate-500">* Recibirás confirmación del envío.</p>
+  </div>
+</form>
   <!-- FOOTER -->
   <footer class="border-t">
     <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
