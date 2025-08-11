@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://garuas.com/sitemap.xml
+Sitemap: https://www.garuas.com/sitemap.xml
