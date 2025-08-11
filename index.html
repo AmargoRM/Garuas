@@ -9,13 +9,14 @@
   <link rel="icon" href="assets/logo.png" />
 </head>
 <body class="min-h-screen bg-white text-slate-800">
+
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-   <a href="/" class="flex items-center gap-3">
-  <img src="assets/logo.png" alt="Garúa" class="h-9 w-9 object-contain rounded-full bg-white" />
-  <span class="font-bold tracking-wide text-teal-700 text-xl">GARÚA</span>
-</a>
+      <a href="/" class="flex items-center gap-3">
+        <img src="assets/logo.png" alt="Garúa" class="h-9 w-9 object-contain rounded-full bg-white" />
+        <span class="font-bold tracking-wide text-teal-700 text-xl">GARÚA</span>
+      </a>
       <nav class="hidden md:flex items-center gap-6 text-sm">
         <a href="#servicios" class="hover:text-teal-700">Servicios</a>
         <a href="#sectores" class="hover:text-teal-700">Sectores</a>
@@ -25,60 +26,11 @@
     </div>
   </header>
 
-<!-- CONTACTO -->
-<section id="contacto" class="px-4 py-16">
-  <h2 class="text-3xl font-extrabold text-center mb-4">Contáctanos</h2>
-
-  <!-- Info de contacto -->
-  <div class="flex justify-center gap-8 mb-6 text-slate-700">
-    <!-- Correo -->
-    <a href="mailto:info@garuas.com" class="flex items-center gap-2 hover:text-teal-700" aria-label="Escribir a info@garuas.com">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm.05-.91L8 8.293 15.95 3.09A1 1 0 0 0 15 2H1a1 1 0 0 0-.95 1.09z"/>
-      </svg>
-      info@garuas.com
-    </a>
-
-    <!-- WhatsApp -->
-    <a href="https://wa.me/50686842522" target="_blank" class="flex items-center gap-2 hover:text-teal-700" aria-label="Escribir por WhatsApp al +506 8684 2522">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M13.601 2.326A7.92 7.92 0 0 0 8 0C3.58 0 0 3.58 0 8a7.96 7.96 0 0 0 1.19 4.18L0 16l3.902-1.013A7.96 7.96 0 0 0 8 16c4.42 0 8-3.58 8-8 0-2.137-.832-4.148-2.399-5.674zM8 14.5a6.48 6.48 0 0 1-3.356-.93l-.24-.143-2.316.601.617-2.258-.156-.232A6.478 6.478 0 0 1 1.5 8c0-3.584 2.916-6.5 6.5-6.5S14.5 4.416 14.5 8s-2.916 6.5-6.5 6.5z"/>
-      </svg>
-      +506 8684 2522
-    </a>
-
-    <!-- LinkedIn -->
-    <a href="https://www.linkedin.com/in/garúa-4b405934b" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-teal-700" aria-label="Visitar LinkedIn de Garúa">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zM4.943 13.5V6.169H2.542V13.5h2.401zm-1.2-8.392c.837 0 1.357-.554 1.357-1.248-.015-.709-.52-1.248-1.342-1.248-.823 0-1.357.54-1.357 1.248 0 .694.52 1.248 1.327 1.248h.015zm4.908 8.392h2.4V9.359c0-.221.016-.442.081-.6.178-.442.583-.9 1.265-.9.893 0 1.25.678 1.25 1.672V13.5h2.4V9.25c0-2.278-1.215-3.339-2.835-3.339-1.318 0-1.904.731-2.229 1.248h.03V6.169h-2.362c.03.678 0 7.331 0 7.331z"/>
-      </svg>
-      LinkedIn
-    </a>
-  </div>
-
-  <!-- Formulario -->
-  <form action="https://formspree.io/f/mwpqavdr" method="POST" class="rounded-2xl border p-6 bg-white max-w-4xl mx-auto">
-    <div class="grid grid-cols-1 gap-4">
-      <input class="rounded-xl border p-3" name="name" placeholder="Nombre" required />
-      <input class="rounded-xl border p-3" name="email" placeholder="Correo" type="email" required />
-      <input class="rounded-xl border p-3" name="phone" placeholder="Teléfono / WhatsApp" />
-      <textarea class="rounded-xl border p-3 min-h-[120px]" name="message" placeholder="¿En qué podemos ayudarte?" required></textarea>
-      <input type="hidden" name="_subject" value="Nuevo contacto desde garuas.com">
-      <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off">
-      <button class="rounded-2xl bg-teal-700 px-5 py-3 text-white font-semibold w-max" type="submit">Enviar</button>
-      <p class="text-xs text-slate-500">* Recibirás confirmación del envío.</p>
-    </div>
-  </form>
-</section>
-
   <!-- SERVICIOS -->
   <section id="servicios" class="bg-slate-50 border-t">
     <div class="mx-auto max-w-6xl px-4 py-16">
       <h2 class="text-3xl font-extrabold">Servicios</h2>
-      <p class="mt-2 text-slate-600 max-w-2xl">
-        Soluciones integrales para agua, ambiente y salud ocupacional.
-      </p>
-
+      <p class="mt-2 text-slate-600 max-w-2xl">Soluciones integrales para agua, ambiente y salud ocupacional.</p>
       <div class="mt-8 grid md:grid-cols-2 gap-6">
         <div class="rounded-2xl bg-white border p-6">
           <h3 class="text-xl font-bold text-teal-700">Operación de Plantas de Tratamiento (PTAR)</h3>
@@ -90,7 +42,6 @@
             <li>Visitas técnicas personalizadas y asesoría integral.</li>
           </ul>
         </div>
-
         <div class="rounded-2xl bg-white border p-6">
           <h3 class="text-xl font-bold text-teal-700">Servicios en Aguas y Consultoría Ambiental</h3>
           <ul class="mt-3 list-disc pl-5 space-y-1 text-slate-700">
@@ -99,7 +50,6 @@
             <li>Gestión documental y trámites ante autoridades.</li>
           </ul>
         </div>
-
         <div class="rounded-2xl bg-white border p-6">
           <h3 class="text-xl font-bold text-teal-700">Salud Ocupacional</h3>
           <ul class="mt-3 list-disc pl-5 space-y-1 text-slate-700">
@@ -109,7 +59,6 @@
             <li>Programas de salud y bienestar laboral.</li>
           </ul>
         </div>
-
         <div class="rounded-2xl bg-white border p-6">
           <h3 class="text-xl font-bold text-teal-700">Gestión Ambiental</h3>
           <ul class="mt-3 list-disc pl-5 space-y-1 text-slate-700">
@@ -126,93 +75,92 @@
   <section id="sectores">
     <div class="mx-auto max-w-6xl px-4 py-16">
       <h2 class="text-3xl font-extrabold">Sectores que atendemos</h2>
-      <p class="mt-2 text-slate-600 max-w-2xl">Industria, agroindustria, municipalidades, comercios y proyectos residenciales con sistemas de tratamiento de aguas.</p>
+      <p class="mt-2 text-slate-600">Industria, agroindustria, municipalidades, comercios y proyectos residenciales con sistemas de tratamiento de aguas.</p>
       <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="rounded-2xl border p-5 text-center"><div class="text-base font-semibold">Industria</div></div>
-        <div class="rounded-2xl border p-5 text-center"><div class="text-base font-semibold">Agroindustria</div></div>
-        <div class="rounded-2xl border p-5 text-center"><div class="text-base font-semibold">Municipal</div></div>
-        <div class="rounded-2xl border p-5 text-center"><div class="text-base font-semibold">Residencial</div></div>
+        <div class="rounded-2xl border p-5 text-center font-semibold">Industria</div>
+        <div class="rounded-2xl border p-5 text-center font-semibold">Agroindustria</div>
+        <div class="rounded-2xl border p-5 text-center font-semibold">Municipal</div>
+        <div class="rounded-2xl border p-5 text-center font-semibold">Residencial</div>
       </div>
     </div>
- <section id="nosotros" class="bg-slate-50 border-y">
-  <div class="mx-auto max-w-4xl px-4 py-16 text-center">
-    <h2 class="text-3xl font-extrabold">Sobre Garúa</h2>
-    <p class="mt-4 text-slate-700">
-      Somos un equipo técnico con experiencia en operación de PTAR, consultoría ambiental y salud ocupacional. Creemos en soluciones simples, medibles y sostenibles que aseguran cumplimiento sin complicar tu operación.
-    </p>
-    <ul class="mt-4 list-disc pl-5 text-slate-700 space-y-1 text-left inline-block">
-      <li>Atención personalizada y comunicación clara.</li>
-      <li>Procesos estandarizados y reportes accionables.</li>
-      <li>Alianzas con laboratorios y profesionales especializados.</li>
-    </ul>
-  </div>
-</section>
-  <!-- CONTACTO -->
-<!-- CONTACTO -->
-<h2 class="text-3xl font-extrabold text-center mb-4">Contáctanos</h2>
+  </section>
 
-<!-- Info de contacto -->
-<div class="flex justify-center gap-8 mb-6 text-slate-700">
-  <!-- Correo -->
-  <a href="mailto:info@garuas.com" class="flex items-center gap-2 hover:text-teal-700">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm.05-.91L8 8.293 15.95 3.09A1 1 0 0 0 15 2H1a1 1 0 0 0-.95 1.09z"/>
-    </svg>
-    info@garuas.com
-  </a>
-
-  <!-- WhatsApp -->
-  <a href="https://wa.me/50686842522" target="_blank" class="flex items-center gap-2 hover:text-teal-700">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M13.601 2.326A7.92 7.92 0 0 0 8 0C3.58 0 0 3.58 0 8a7.96 7.96 0 0 0 1.19 4.18L0 16l3.902-1.013A7.96 7.96 0 0 0 8 16c4.42 0 8-3.58 8-8 0-2.137-.832-4.148-2.399-5.674zM8 14.5a6.48 6.48 0 0 1-3.356-.93l-.24-.143-2.316.601.617-2.258-.156-.232A6.478 6.478 0 0 1 1.5 8c0-3.584 2.916-6.5 6.5-6.5S14.5 4.416 14.5 8s-2.916 6.5-6.5 6.5z"/>
-    </svg>
-    +506 8684 2522
-  </a>
-
-  <!-- LinkedIn -->
-  <a href="https://www.linkedin.com/in/garúa-4b405934b" target="_blank" class="flex items-center gap-2 hover:text-teal-700">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zM4.943 13.5V6.169H2.542V13.5h2.401zm-1.2-8.392c.837 0 1.357-.554 1.357-1.248-.015-.709-.52-1.248-1.342-1.248-.823 0-1.357.54-1.357 1.248 0 .694.52 1.248 1.327 1.248h.015zm4.908 8.392h2.4V9.359c0-.221.016-.442.081-.6.178-.442.583-.9 1.265-.9.893 0 1.25.678 1.25 1.672V13.5h2.4V9.25c0-2.278-1.215-3.339-2.835-3.339-1.318 0-1.904.731-2.229 1.248h.03V6.169h-2.362c.03.678 0 7.331 0 7.331z"/>
-    </svg>
-    LinkedIn
-  </a>
-</div>
-
-<!-- Formulario -->
-<form action="https://formspree.io/f/mwpqavdr" method="POST" class="rounded-2xl border p-6 bg-white">
-  <div class="grid grid-cols-1 gap-4">
-    <input class="rounded-xl border p-3" name="name" placeholder="Nombre" required />
-    <input class="rounded-xl border p-3" name="email" placeholder="Correo" type="email" required />
-    <input class="rounded-xl border p-3" name="phone" placeholder="Teléfono / WhatsApp" />
-    <textarea class="rounded-xl border p-3 min-h-[120px]" name="message" placeholder="¿En qué podemos ayudarte?" required></textarea>
-    <input type="hidden" name="_subject" value="Nuevo contacto desde garuas.com">
-    <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off">
-    <button class="rounded-2xl bg-teal-700 px-5 py-3 text-white font-semibold w-max" type="submit">Enviar</button>
-    <p class="text-xs text-slate-500">* Recibirás confirmación del envío.</p>
-  </div>
-</form>
-<!-- FOOTER -->
-<footer class="border-t">
-  <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
-    <div class="flex items-center gap-2">
-      <img src="assets/logo.png" alt="Garúa" class="h-6 w-6 object-contain rounded-full bg-white" />
-      <span class="font-semibold text-slate-800">Garúa</span>
+  <!-- NOSOTROS -->
+  <section id="nosotros" class="bg-slate-50 border-y">
+    <div class="mx-auto max-w-4xl px-4 py-16 text-center">
+      <h2 class="text-3xl font-extrabold">Sobre Garúa</h2>
+      <p class="mt-4 text-slate-700">
+        Somos un equipo técnico con experiencia en operación de PTAR, consultoría ambiental y salud ocupacional. Creemos en soluciones simples, medibles y sostenibles que aseguran cumplimiento sin complicar tu operación.
+      </p>
+      <ul class="mt-4 list-disc pl-5 text-slate-700 space-y-1 text-left inline-block">
+        <li>Atención personalizada y comunicación clara.</li>
+        <li>Procesos estandarizados y reportes accionables.</li>
+        <li>Alianzas con laboratorios y profesionales especializados.</li>
+      </ul>
     </div>
-    <div class="opacity-80">© <span id="year"></span> Garúa. Todos los derechos reservados.</div>
-    <div class="flex gap-4">
-      <a class="hover:text-teal-700" href="#">Política de privacidad</a>
-      <a class="hover:text-teal-700" href="#">Términos</a>
-      <a class="hover:text-teal-700 flex items-center gap-1" href="https://www.linkedin.com/in/garúa-4b405934b" target="_blank" rel="noopener noreferrer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="px-4 py-16">
+    <h2 class="text-3xl font-extrabold text-center mb-4">Contáctanos</h2>
+    <div class="flex justify-center gap-8 mb-6 text-slate-700">
+      <a href="mailto:info@garuas.com" class="flex items-center gap-2 hover:text-teal-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm.05-.91L8 8.293 15.95 3.09A1 1 0 0 0 15 2H1a1 1 0 0 0-.95 1.09z"/>
+        </svg>
+        info@garuas.com
+      </a>
+      <a href="https://wa.me/50686842522" target="_blank" class="flex items-center gap-2 hover:text-teal-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M13.601 2.326A7.92 7.92 0 0 0 8 0C3.58 0 0 3.58 0 8a7.96 7.96 0 0 0 1.19 4.18L0 16l3.902-1.013A7.96 7.96 0 0 0 8 16c4.42 0 8-3.58 8-8 0-2.137-.832-4.148-2.399-5.674zM8 14.5a6.48 6.48 0 0 1-3.356-.93l-.24-.143-2.316.601.617-2.258-.156-.232A6.478 6.478 0 0 1 1.5 8c0-3.584 2.916-6.5 6.5-6.5S14.5 4.416 14.5 8s-2.916 6.5-6.5 6.5z"/>
+        </svg>
+        +506 8684 2522
+      </a>
+      <a href="https://www.linkedin.com/in/garúa-4b405934b" target="_blank" class="flex items-center gap-2 hover:text-teal-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
           <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zM4.943 13.5V6.169H2.542V13.5h2.401zm-1.2-8.392c.837 0 1.357-.554 1.357-1.248-.015-.709-.52-1.248-1.342-1.248-.823 0-1.357.54-1.357 1.248 0 .694.52 1.248 1.327 1.248h.015zm4.908 8.392h2.4V9.359c0-.221.016-.442.081-.6.178-.442.583-.9 1.265-.9.893 0 1.25.678 1.25 1.672V13.5h2.4V9.25c0-2.278-1.215-3.339-2.835-3.339-1.318 0-1.904.731-2.229 1.248h.03V6.169h-2.362c.03.678 0 7.331 0 7.331z"/>
         </svg>
         LinkedIn
       </a>
     </div>
-  </div>
-</footer>
+    <form action="https://formspree.io/f/mwpqavdr" method="POST" class="rounded-2xl border p-6 bg-white max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 gap-4">
+        <input class="rounded-xl border p-3" name="name" placeholder="Nombre" required />
+        <input class="rounded-xl border p-3" name="email" placeholder="Correo" type="email" required />
+        <input class="rounded-xl border p-3" name="phone" placeholder="Teléfono / WhatsApp" />
+        <textarea class="rounded-xl border p-3 min-h-[120px]" name="message" placeholder="¿En qué podemos ayudarte?" required></textarea>
+        <input type="hidden" name="_subject" value="Nuevo contacto desde garuas.com">
+        <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off">
+        <button class="rounded-2xl bg-teal-700 px-5 py-3 text-white font-semibold w-max" type="submit">Enviar</button>
+        <p class="text-xs text-slate-500">* Recibirás confirmación del envío.</p>
+      </div>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t">
+    <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
+      <div class="flex items-center gap-2">
+        <img src="assets/logo.png" alt="Garúa" class="h-6 w-6 object-contain rounded-full bg-white" />
+        <span class="font-semibold text-slate-800">Garúa</span>
+      </div>
+      <div class="opacity-80">© <span id="year"></span> Garúa. Todos los derechos reservados.</div>
+      <div class="flex gap-4">
+        <a class="hover:text-teal-700" href="#">Política de privacidad</a>
+        <a class="hover:text-teal-700" href="#">Términos</a>
+        <a class="hover:text-teal-700 flex items-center gap-1" href="https://www.linkedin.com/in/garúa-4b405934b" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zM4.943 13.5V6.169H2.542V13.5h2.401zm-1.2-8.392c.837 0 1.357-.554 1.357-1.248-.015-.709-.52-1.248-1.342-1.248-.823 0-1.357.54-1.357 1.248 0 .694.52 1.248 1.327 1.248h.015zm4.908 8.392h2.4V9.359c0-.221.016-.442.081-.6.178-.442.583-.9 1.265-.9.893 0 1.25.678 1.25 1.672V13.5h2.4V9.25c0-2.278-1.215-3.339-2.835-3.339-1.318 0-1.904.731-2.229 1.248h.03V6.169h-2.362c.03.678 0 7.331 0 7.331z"/>
+          </svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </footer>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+
 </body>
 </html>
