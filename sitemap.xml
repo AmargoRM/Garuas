@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://garuas.com/</loc>
-    <changefreq>weekly</changefreq>
+    <lastmod>2025-08-11</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://garuas.com/servicios</loc>
+    <loc>https://garuas.com/consultoria-ambiental-costa-rica/</loc>
+    <lastmod>2025-08-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- Agrega estos cuando existan -->
+  <!--
   <url>
-    <loc>https://garuas.com/contacto</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://garuas.com/operacion-ptar-costa-rica/</loc>
+    <lastmod>2025-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
-
+  <url>
+    <loc>https://garuas.com/salud-ocupacional-costa-rica/</loc>
+    <lastmod>2025-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  -->
 </urlset>
