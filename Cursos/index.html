@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es-CR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cursos y Eventos | Garúa</title>
+  <meta name="description" content="Cursos, capacitaciones y webinars de Garúa sobre agua, ambiente y salud ocupacional en Costa Rica." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://garuas.com/Cursos/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Cursos y Eventos | Garúa" />
+  <meta property="og:description" content="Capacitaciones y webinars para empresas en Costa Rica." />
+  <meta property="og:url" content="https://garuas.com/Cursos/" />
+  <meta property="og:image" content="https://garuas.com/assets/logo.png" />
+  <link rel="icon" href="/assets/logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>html{scroll-behavior:smooth}</style>
+</head>
+<body class="min-h-screen bg-white text-slate-800">
+  <header class="w-full border-b bg-white/80 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/assets/garua_logo_banner2_recortado.png" alt="Garúa" class="h-10 object-contain" />
+        <span class="font-semibold tracking-wide">Garúa</span>
+      </a>
+      <nav class="text-sm hidden sm:flex gap-6">
+        <a href="/" class="hover:text-sky-700">Inicio</a>
+        <a href="/servicios" class="hover:text-sky-700">Servicios</a>
+        <a href="/Cursos/" class="text-sky-700 font-medium">Cursos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-12">
+    <h1 class="text-3xl md:text-4xl font-bold">Cursos y Eventos</h1>
+    <p class="mt-4 text-lg text-slate-600">Capacitaciones y webinars de Garúa sobre agua, ambiente y salud ocupacional.</p>
+
+    <div class="mt-8 grid md:grid-cols-2 gap-6">
+      <article class="rounded-xl border p-6 bg-white">
+        <h2 class="text-xl font-semibold">Webinar: Bandera Azul Ecológica para su empresa</h2>
+        <p class="mt-2 text-slate-700">Requisitos y pasos clave para empresas privadas en Costa Rica.</p>
+        <a href="/Cursos/bandera-azul.html" class="mt-4 inline-flex items-center text-sky-700 hover:underline">Ver detalles →</a>
+      </article>
+
+      <article class="rounded-xl border p-6 bg-white">
+        <h2 class="text-xl font-semibold">Próximamente</h2>
+        <p class="mt-2 text-slate-700">Más cursos y eventos están en preparación.</p>
+        <span class="mt-4 inline-flex items-center text-slate-400">Por anunciar</span>
+      </article>
+    </div>
+  </main>
+
+  <footer class="border-t">
+    <div class="mx-auto max-w-6xl px-4 py-8 text-sm text-slate-500">
+      © <span id="y"></span> Garúa · Agua, Ambiente y Salud Ocupacional · <a class="underline hover:text-slate-700" href="mailto:info@garuas.com">info@garuas.com</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
