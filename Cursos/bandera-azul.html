@@ -177,7 +177,7 @@
     document.getElementById('y').textContent = new Date().getFullYear();
     const eventDate = new Date('2025-09-24T18:00:00-06:00').getTime();
     const el = document.getElementById('countdown');
-    setInterval(() => {
+    const timer = setInterval(() => {
       const now = new Date().getTime();
       const d = Math.max(eventDate - now, 0);
       const days = Math.floor(d / (1000*60*60*24));
@@ -185,6 +185,7 @@
       const mins = Math.floor((d % (1000*60*60))/(1000*60));
       const secs = Math.floor((d % (1000*60))/1000);
       el.textContent = `${days}d : ${hours}h : ${mins}m : ${secs}s`;
+      if (d === 0) clearInterval(timer);
     }, 1000);
   </script>
 </body>
