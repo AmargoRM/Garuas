@@ -41,3 +41,13 @@ def test_all_html_files_included_in_sitemap():
     missing = sorted(html_paths - sitemap_paths)
     assert not missing, f"Missing from sitemap.xml: {missing}"
 
+
+def test_all_urls_have_required_tags():
+    root = Path(__file__).resolve().parents[1]
+    tree = ET.parse(root / "sitemap.xml")
+    ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    required = ["loc", "lastmod", "changefreq", "priority"]
+    for url in tree.findall(".//sm:url", ns):
+        missing = [tag for tag in required if url.find(f"sm:{tag}", ns) is None]
+        assert not missing, f"Missing tags {missing} in sitemap entry"
+
