@@ -27,17 +27,33 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "Consultoría ambiental",
-    "serviceType": "Consultoría ambiental",
-    "url": "https://garuas.com/consultoria-ambiental-costa-rica/",
-    "areaServed": "CR",
-    "provider": {
-      "@type": "Organization",
-      "name": "Garúa",
-      "url": "https://garuas.com/",
-      "logo": "https://garuas.com/assets/logo.png"
-    }
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://garuas.com/#localbusiness",
+        "name": "Garúa",
+        "image": "https://garuas.com/assets/logo.png",
+        "url": "https://garuas.com/",
+        "telephone": "+50686842522",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "San José",
+          "addressLocality": "San José",
+          "addressRegion": "San José",
+          "addressCountry": "CR"
+        },
+        "areaServed": "CR",
+        "openingHours": "Mo-Fr 08:00-17:00"
+      },
+      {
+        "@type": "Service",
+        "name": "Consultoría ambiental",
+        "serviceType": "Consultoría ambiental",
+        "url": "https://garuas.com/consultoria-ambiental-costa-rica/",
+        "areaServed": "CR",
+        "provider": {"@id": "https://garuas.com/#localbusiness"}
+      }
+    ]
   }
   </script>
 </head>
