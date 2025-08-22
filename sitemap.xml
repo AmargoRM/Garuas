@@ -20,9 +20,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Agrega estos cuando existan -->
-  <!--
   <url>
     <loc>https://garuas.com/operacion-ptar-costa-rica/</loc>
     <lastmod>2025-08-11</lastmod>
@@ -35,5 +32,4 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  -->
 </urlset>
