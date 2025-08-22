@@ -113,20 +113,20 @@
         <form action="https://formspree.io/f/xpwlbowj" method="POST" class="mt-6 space-y-4 rounded-2xl border bg-white p-6 shadow-sm">
           <input type="hidden" name="_subject" value="Registro webinar Bandera Azul · Garúa" />
           <div>
-            <label class="block text-sm font-medium">Nombre y apellidos</label>
-            <input required name="nombre" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Nombre completo" />
+            <label for="nombre" class="block text-sm font-medium">Nombre y apellidos</label>
+            <input id="nombre" required name="nombre" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Nombre completo" />
           </div>
           <div>
-            <label class="block text-sm font-medium">Correo electrónico</label>
-            <input required type="email" name="email" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="correo@empresa.com" />
+            <label for="email" class="block text-sm font-medium">Correo electrónico</label>
+            <input id="email" required type="email" name="email" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="correo@empresa.com" />
           </div>
           <div>
-            <label class="block text-sm font-medium">Empresa</label>
-            <input name="empresa" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Nombre de la empresa (opcional)" />
+            <label for="empresa" class="block text-sm font-medium">Empresa</label>
+            <input id="empresa" name="empresa" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Nombre de la empresa (opcional)" />
           </div>
           <div>
-            <label class="block text-sm font-medium">Sector</label>
-            <select name="sector" class="mt-1 w-full rounded-lg border px-3 py-2">
+            <label for="sector" class="block text-sm font-medium">Sector</label>
+            <select id="sector" name="sector" class="mt-1 w-full rounded-lg border px-3 py-2">
               <option>Industrial</option>
               <option>Servicios</option>
               <option>Turismo/Hotelero</option>
