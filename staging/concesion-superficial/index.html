@@ -73,7 +73,7 @@
       }
     </style>
   </head>
-  <body class="min-h-full bg-slate-50 text-slate-800">
+  <body class="min-h-full bg-slate-50 text-slate-800" data-access-token="8b6a5213-7c50-4967-a0a2-35d26f260841">
     <div id="restricted" class="hidden min-h-screen flex items-center justify-center p-6">
       <div class="max-w-md text-center bg-white shadow-lg rounded-2xl p-8">
         <h1 class="text-2xl font-semibold text-slate-900">Página no disponible</h1>
@@ -213,16 +213,16 @@
 
                   <div class="space-y-6">
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q1">
-                      <h3 class="text-base font-semibold text-slate-900">
+                      <h3 id="q1-heading" class="text-base font-semibold text-slate-900">
                         ¿Es usted propietario del inmueble o de los inmuebles donde se pretende realizar el aprovechamiento del agua?
                       </h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q1-label">
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q1-heading">
                         <button type="button" class="option-btn" data-question="q1" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q1" data-value="no">No</button>
                       </div>
                       <div class="mt-4 hidden space-y-3" data-follow-up="q1">
-                        <p class="text-sm text-slate-600">¿Cuenta con un poder notarial que lo autorice a realizar la solicitud?</p>
-                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                        <p id="q1b-heading" class="text-sm text-slate-600">¿Cuenta con un poder notarial que lo autorice a realizar la solicitud?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q1b-heading">
                           <button type="button" class="option-btn" data-question="q1b" data-value="si">Sí</button>
                           <button type="button" class="option-btn" data-question="q1b" data-value="no">No</button>
                         </div>
@@ -230,16 +230,16 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q2">
-                      <h3 class="text-base font-semibold text-slate-900">
+                      <h3 id="q2-heading" class="text-base font-semibold text-slate-900">
                         ¿La propiedad está inscrita en el Registro Nacional de la Propiedad?
                       </h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q2-heading">
                         <button type="button" class="option-btn" data-question="q2" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q2" data-value="no">No</button>
                       </div>
                       <div class="mt-4 hidden space-y-3" data-follow-up="q2">
-                        <p class="text-sm text-slate-600">¿Está en proceso de regularización como información posesoria?</p>
-                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                        <p id="q2b-heading" class="text-sm text-slate-600">¿Está en proceso de regularización como información posesoria?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q2b-heading">
                           <button type="button" class="option-btn" data-question="q2b" data-value="si">Sí</button>
                           <button type="button" class="option-btn" data-question="q2b" data-value="no">No</button>
                         </div>
@@ -247,8 +247,8 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q3">
-                      <h3 class="text-base font-semibold text-slate-900">¿Está al día con Hacienda, CCSS y la DA?</h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <h3 id="q3-heading" class="text-base font-semibold text-slate-900">¿Está al día con Hacienda, CCSS y la DA?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q3-heading">
                         <button type="button" class="option-btn" data-question="q3" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q3" data-value="no">No</button>
                       </div>
@@ -258,14 +258,14 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q5">
-                      <h3 class="text-base font-semibold text-slate-900">¿La fuente se encuentra dentro de un Parque Nacional?</h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <h3 id="q5-heading" class="text-base font-semibold text-slate-900">¿La fuente se encuentra dentro de un Parque Nacional?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q5-heading">
                         <button type="button" class="option-btn" data-question="q5" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q5" data-value="no">No</button>
                       </div>
                       <div class="mt-4 hidden space-y-3" data-follow-up="q5">
-                        <p class="text-sm text-slate-600">¿La propiedad solicitante también está dentro del Parque Nacional?</p>
-                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                        <p id="q5b-heading" class="text-sm text-slate-600">¿La propiedad solicitante también está dentro del Parque Nacional?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q5b-heading">
                           <button type="button" class="option-btn" data-question="q5b" data-value="si">Sí</button>
                           <button type="button" class="option-btn" data-question="q5b" data-value="no">No</button>
                         </div>
@@ -273,22 +273,22 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q6">
-                      <h3 class="text-base font-semibold text-slate-900">
+                      <h3 id="q6-heading" class="text-base font-semibold text-slate-900">
                         ¿La conducción del agua hasta su propiedad NO atraviesa terrenos de terceros?
                       </h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q6-heading">
                         <button type="button" class="option-btn" data-question="q6" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q6" data-value="no">No</button>
                       </div>
                       <div class="mt-4 hidden space-y-3" data-follow-up="q6">
-                        <p class="text-sm text-slate-600">¿Cuenta con autorización de los propietarios involucrados?</p>
-                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                        <p id="q6b-heading" class="text-sm text-slate-600">¿Cuenta con autorización de los propietarios involucrados?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q6b-heading">
                           <button type="button" class="option-btn" data-question="q6b" data-value="si">Sí</button>
                           <button type="button" class="option-btn" data-question="q6b" data-value="no">No</button>
                         </div>
                         <div class="hidden space-y-3" data-follow-up="q6b">
-                          <p class="text-sm text-slate-600">¿Puede conducir por cauce de dominio público (río/quebrada)?</p>
-                          <div class="flex flex-wrap gap-3" role="radiogroup">
+                          <p id="q6c-heading" class="text-sm text-slate-600">¿Puede conducir por cauce de dominio público (río/quebrada)?</p>
+                          <div class="flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q6c-heading">
                             <button type="button" class="option-btn" data-question="q6c" data-value="si">Sí</button>
                             <button type="button" class="option-btn" data-question="q6c" data-value="no">No</button>
                           </div>
@@ -300,14 +300,16 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q7">
-                      <h3 class="text-base font-semibold text-slate-900">¿El uso es para consumo humano (agua potable)?</h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <h3 id="q7-heading" class="text-base font-semibold text-slate-900">¿El uso es para consumo humano (agua potable)?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q7-heading">
                         <button type="button" class="option-btn" data-question="q7" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q7" data-value="no">No</button>
                       </div>
                       <div class="mt-4 hidden rounded-xl border border-primary-100 bg-primary-50 p-3 text-sm text-primary-700" data-alert="q7">
-                        El uso de agua para consumo humano está restringido a un proveedor estatal. ¿Desea continuar la solicitud para usos adicionales?
-                        <div class="mt-3 flex flex-wrap gap-3">
+                        <p id="q7b-heading" class="text-sm">
+                          El uso de agua para consumo humano está restringido a un proveedor estatal. ¿Desea continuar la solicitud para usos adicionales?
+                        </p>
+                        <div class="mt-3 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q7b-heading">
                           <button type="button" class="option-btn" data-question="q7b" data-value="si">Sí</button>
                           <button type="button" class="option-btn" data-question="q7b" data-value="no">No</button>
                         </div>
@@ -315,8 +317,8 @@
                     </article>
 
                     <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q8">
-                      <h3 class="text-base font-semibold text-slate-900">¿El aprovechamiento se encuentra fuera de áreas de protección?</h3>
-                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                      <h3 id="q8-heading" class="text-base font-semibold text-slate-900">¿El aprovechamiento se encuentra fuera de áreas de protección?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q8-heading">
                         <button type="button" class="option-btn" data-question="q8" data-value="si">Sí</button>
                         <button type="button" class="option-btn" data-question="q8" data-value="no">No</button>
                       </div>
