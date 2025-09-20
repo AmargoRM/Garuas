@@ -297,7 +297,7 @@ async function sendPayload(payload) {
     const resumen = encodeURIComponent(
       `Nombre: ${payload.nombre}\nCorreo: ${payload.correo}\nTeléfono: ${payload.telefono}\nLat/Lng: ${payload.lat}, ${payload.lng}\nRespuestas: ${JSON.stringify(payload.respuestas, null, 2)}\nEstado: ${JSON.stringify(payload.estado, null, 2)}\nUser-Agent: ${payload.userAgent}\nTimestamp: ${payload.timestampISO}`
     );
-    window.location.href = `mailto:info@garuas.com?subject=${encodeURIComponent('Pre-evaluación concesión (staging)')}&body=${resumen}`;
+    window.location.href = `mailto:info@garuas.com?subject=${encodeURIComponent('Evaluación de viabilidad concesión (staging)')}&body=${resumen}`;
     return false;
   }
 }
