@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Garúa · Pre-evaluación de concesión de agua superficial</title>
+    <meta name="description" content="Pre-evaluación rápida para concesión de agua superficial con Garúa." />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="googlebot" content="noindex,nofollow" />
+    <!-- X-Robots-Tag header snippet suggestions:
+      Netlify: [[headers]]\n  for = "/staging/concesion-superficial*"\n  [headers.values]\n  X-Robots-Tag = "noindex, nofollow"
+      NGINX: add_header X-Robots-Tag "noindex, nofollow"; (within location /staging/)
+      Apache: Header set X-Robots-Tag "noindex, nofollow" (in <Location "/staging/">)
+    -->
+    <!-- Para reforzar privacidad, bloquee /staging/ en robots.txt si el entorno lo permite. -->
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#edf6f9',
+                100: '#d8eef1',
+                500: '#3b9d8f',
+                600: '#2f7c72',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .option-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: rgb(71, 85, 105);
+        background: white;
+        transition: all 0.2s ease;
+        box-shadow: inset 0 0 0 0 rgba(59, 157, 143, 0);
+      }
+      .option-btn:hover,
+      .option-btn:focus-visible {
+        border-color: rgba(59, 157, 143, 0.7);
+        box-shadow: 0 0 0 3px rgba(59, 157, 143, 0.15);
+        outline: none;
+      }
+      .option-btn[aria-pressed='true'] {
+        background: linear-gradient(135deg, #3b9d8f, #2f7c72);
+        color: white;
+        border-color: transparent;
+        box-shadow: inset 0 0 0 0 rgba(59, 157, 143, 0.2);
+      }
+      .option-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body class="min-h-full bg-slate-50 text-slate-800" data-access-token="8b6a5213-7c50-4967-a0a2-35d26f260841">
+    <div id="restricted" class="min-h-screen flex items-center justify-center p-6">
+      <div class="max-w-md text-center bg-white shadow-lg rounded-2xl p-8">
+        <h1 class="text-2xl font-semibold text-slate-900">Página no disponible</h1>
+        <p class="mt-4 text-slate-600">
+          Necesita un enlace válido para acceder a esta pre-evaluación. Si cree que es un error,
+          contacte a <a class="text-primary-600 font-semibold" href="mailto:info@garuas.com">info@garuas.com</a>.
+        </p>
+      </div>
+    </div>
+    <div id="page" class="hidden">
+      <div class="relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div class="absolute -top-10 -right-16 h-48 w-48 rounded-full bg-primary-50"></div>
+          <div class="absolute bottom-0 left-10 h-32 w-32 rounded-full bg-primary-100"></div>
+        </div>
+        <div class="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+          <header class="mb-10">
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 64 64"
+                    class="h-10 w-10 text-primary-600"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M33 4c-7.2 9.4-17.4 23-17.4 32.2 0 9.9 7.7 17.8 17.4 17.8s17.4-7.9 17.4-17.8C50.4 27 40.2 13.4 33 4zm0 43.6c-6.1 0-11-5.1-11-11.4 0-3.4 2.3-7.9 6.9-14.4 1.4 2.5 3.5 5.5 6.2 8.7 4.3 5.1 4.9 7.7 4.9 10.1 0 6.3-4.9 11.4-11 11.4z"
+                    />
+                  </svg>
+                  <span class="sr-only">Garúa</span>
+                </div>
+                <div>
+                  <p class="text-sm uppercase tracking-wide text-primary-600">Garúa</p>
+                  <h1 class="text-2xl font-semibold text-slate-900">
+                    Pre-evaluación de concesión de agua superficial
+                  </h1>
+                </div>
+              </div>
+              <p class="rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-primary-600 shadow-sm">
+                Respuesta en &lt; 24 h con viabilidad y cotización preliminar
+              </p>
+            </div>
+          </header>
+          <main class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <section>
+              <div class="mb-6">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-slate-600">Progreso</p>
+                  <span id="progress-label" class="text-sm font-semibold text-primary-600">0%</span>
+                </div>
+                <div class="mt-2 h-2 rounded-full bg-slate-200">
+                  <div id="progress-bar" class="h-full w-0 rounded-full bg-primary-500 transition-all"></div>
+                </div>
+              </div>
+              <div
+                id="formMessage"
+                class="hidden rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700"
+                role="alert"
+                aria-live="assertive"
+              ></div>
+              <form id="preEvalForm" class="space-y-8" novalidate>
+                <input type="text" name="empresa" autocomplete="off" class="hidden" tabindex="-1" aria-hidden="true" />
+                <fieldset class="space-y-6 rounded-2xl bg-white p-6 shadow-sm">
+                  <legend class="text-lg font-semibold text-slate-900">Datos de contacto</legend>
+                  <div>
+                    <label for="nombre" class="block text-sm font-medium text-slate-700">Nombre y apellidos *</label>
+                    <input
+                      id="nombre"
+                      name="nombre"
+                      type="text"
+                      required
+                      autocomplete="name"
+                      class="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-primary-500 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label for="correo" class="block text-sm font-medium text-slate-700">Correo electrónico *</label>
+                    <input
+                      id="correo"
+                      name="correo"
+                      type="email"
+                      required
+                      autocomplete="email"
+                      class="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-primary-500 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label for="telefono" class="block text-sm font-medium text-slate-700">Teléfono o WhatsApp *</label>
+                    <input
+                      id="telefono"
+                      name="telefono"
+                      type="tel"
+                      required
+                      autocomplete="tel"
+                      class="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-primary-500 focus:ring-primary-500"
+                    />
+                  </div>
+                </fieldset>
+
+                <fieldset class="space-y-4 rounded-2xl bg-white p-6 shadow-sm">
+                  <legend class="text-lg font-semibold text-slate-900">Ubicación aproximada</legend>
+                  <p class="text-sm text-slate-600">
+                    Haga clic para marcar el punto más aproximado de la naciente. Puede mover el mapa para ubicarla.
+                  </p>
+                  <div class="h-72 overflow-hidden rounded-2xl" id="map" role="region" aria-label="Mapa para ubicar la naciente"></div>
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label for="lat" class="block text-sm font-medium text-slate-700">Latitud *</label>
+                      <input
+                        id="lat"
+                        name="lat"
+                        type="text"
+                        readonly
+                        required
+                        class="mt-1 block w-full rounded-xl border-slate-200 bg-slate-100 focus:border-primary-500 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label for="lng" class="block text-sm font-medium text-slate-700">Longitud *</label>
+                      <input
+                        id="lng"
+                        name="lng"
+                        type="text"
+                        readonly
+                        required
+                        class="mt-1 block w-full rounded-xl border-slate-200 bg-slate-100 focus:border-primary-500 focus:ring-primary-500"
+                      />
+                    </div>
+                  </div>
+                </fieldset>
+
+                <section class="space-y-6">
+                  <h2 class="text-lg font-semibold text-slate-900">Cuestionario</h2>
+
+                  <div class="space-y-6">
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q1">
+                      <h3 class="text-base font-semibold text-slate-900">
+                        ¿Es usted propietario del inmueble o de los inmuebles donde se pretende realizar el aprovechamiento del agua?
+                      </h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-labelledby="q1-label">
+                        <button type="button" class="option-btn" data-question="q1" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q1" data-value="no">No</button>
+                      </div>
+                      <div class="mt-4 hidden space-y-3" data-follow-up="q1">
+                        <p class="text-sm text-slate-600">¿Cuenta con un poder notarial que lo autorice a realizar la solicitud?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                          <button type="button" class="option-btn" data-question="q1b" data-value="si">Sí</button>
+                          <button type="button" class="option-btn" data-question="q1b" data-value="no">No</button>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q2">
+                      <h3 class="text-base font-semibold text-slate-900">
+                        ¿La propiedad está inscrita en el Registro Nacional de la Propiedad?
+                      </h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q2" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q2" data-value="no">No</button>
+                      </div>
+                      <div class="mt-4 hidden space-y-3" data-follow-up="q2">
+                        <p class="text-sm text-slate-600">¿Está en proceso de regularización como información posesoria?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                          <button type="button" class="option-btn" data-question="q2b" data-value="si">Sí</button>
+                          <button type="button" class="option-btn" data-question="q2b" data-value="no">No</button>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q3">
+                      <h3 class="text-base font-semibold text-slate-900">¿Está al día con Hacienda, CCSS y la DA?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q3" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q3" data-value="no">No</button>
+                      </div>
+                      <p class="mt-4 hidden rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700" data-alert="q3">
+                        Debe regularizarse ante Hacienda, CCSS y la Dirección de Aguas para avanzar con la concesión.
+                      </p>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q5">
+                      <h3 class="text-base font-semibold text-slate-900">¿La fuente se encuentra dentro de un Parque Nacional?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q5" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q5" data-value="no">No</button>
+                      </div>
+                      <div class="mt-4 hidden space-y-3" data-follow-up="q5">
+                        <p class="text-sm text-slate-600">¿La propiedad solicitante también está dentro del Parque Nacional?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                          <button type="button" class="option-btn" data-question="q5b" data-value="si">Sí</button>
+                          <button type="button" class="option-btn" data-question="q5b" data-value="no">No</button>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q6">
+                      <h3 class="text-base font-semibold text-slate-900">
+                        ¿La conducción del agua hasta su propiedad NO atraviesa terrenos de terceros?
+                      </h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q6" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q6" data-value="no">No</button>
+                      </div>
+                      <div class="mt-4 hidden space-y-3" data-follow-up="q6">
+                        <p class="text-sm text-slate-600">¿Cuenta con autorización de los propietarios involucrados?</p>
+                        <div class="flex flex-wrap gap-3" role="radiogroup">
+                          <button type="button" class="option-btn" data-question="q6b" data-value="si">Sí</button>
+                          <button type="button" class="option-btn" data-question="q6b" data-value="no">No</button>
+                        </div>
+                        <div class="hidden space-y-3" data-follow-up="q6b">
+                          <p class="text-sm text-slate-600">¿Puede conducir por cauce de dominio público (río/quebrada)?</p>
+                          <div class="flex flex-wrap gap-3" role="radiogroup">
+                            <button type="button" class="option-btn" data-question="q6c" data-value="si">Sí</button>
+                            <button type="button" class="option-btn" data-question="q6c" data-value="no">No</button>
+                          </div>
+                        </div>
+                      </div>
+                      <p class="mt-4 hidden rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700" data-alert="q6">
+                        Si requiere servidumbre forzosa o acuerdo privado, podemos asesorarle durante la evaluación.
+                      </p>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q7">
+                      <h3 class="text-base font-semibold text-slate-900">¿El uso es para consumo humano (agua potable)?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q7" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q7" data-value="no">No</button>
+                      </div>
+                      <div class="mt-4 hidden rounded-xl border border-primary-100 bg-primary-50 p-3 text-sm text-primary-700" data-alert="q7">
+                        El uso de agua para consumo humano está restringido a un proveedor estatal. ¿Desea continuar la solicitud para usos adicionales?
+                        <div class="mt-3 flex flex-wrap gap-3">
+                          <button type="button" class="option-btn" data-question="q7b" data-value="si">Sí</button>
+                          <button type="button" class="option-btn" data-question="q7b" data-value="no">No</button>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article class="rounded-2xl bg-white p-6 shadow-sm" data-step="q8">
+                      <h3 class="text-base font-semibold text-slate-900">¿El aprovechamiento se encuentra fuera de áreas de protección?</h3>
+                      <div class="mt-4 flex flex-wrap gap-3" role="radiogroup">
+                        <button type="button" class="option-btn" data-question="q8" data-value="si">Sí</button>
+                        <button type="button" class="option-btn" data-question="q8" data-value="no">No</button>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+
+                <div class="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+                  <button
+                    type="submit"
+                    class="w-full rounded-full bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  >
+                    Enviar pre-evaluación
+                  </button>
+                  <p class="text-xs text-slate-500">
+                    Su información se usará únicamente para evaluar viabilidad y cotizar. No compartimos datos con terceros.
+                  </p>
+                </div>
+              </form>
+              <div id="confirmation" class="hidden rounded-2xl bg-white p-8 text-center shadow-sm">
+                <h2 class="text-2xl font-semibold text-slate-900">¡Gracias!</h2>
+                <p id="confirmation-message" class="mt-4 text-sm text-slate-600"></p>
+                <button
+                  type="button"
+                  id="backButton"
+                  class="mt-6 inline-flex items-center justify-center rounded-full border border-primary-600 px-5 py-2 text-sm font-semibold text-primary-600 transition hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                >
+                  Registrar otra solicitud
+                </button>
+              </div>
+            </section>
+
+            <aside class="space-y-6">
+              <div class="rounded-2xl bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-900">Ubicación referencial</h2>
+                <p class="mt-2 text-sm text-slate-600">
+                  Ajuste el mapa para que nuestro equipo cuente con un punto de partida en la inspección.
+                </p>
+                <ul class="mt-4 space-y-2 text-sm text-slate-500">
+                  <li>• Puede mover el marcador haciendo clic nuevamente.</li>
+                  <li>• Si necesita asistencia, llámenos o escriba a <a class="text-primary-600 font-semibold" href="mailto:info@garuas.com">info@garuas.com</a>.</li>
+                  <li>• En algunos casos coordinamos visita técnica y valoración ambiental.</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-900">Contacto</h2>
+                <p class="mt-2 text-sm text-slate-600">info@garuas.com · +506 0000-0000</p>
+              </div>
+            </aside>
+          </main>
+        </div>
+      </div>
+      <footer class="border-t border-slate-200 bg-white/70">
+        <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; <span id="year"></span> Garúa. Todos los derechos reservados.</p>
+          <p>Aviso de privacidad: Su información se usa solo para evaluar viabilidad y cotizar. No compartimos datos con terceros.</p>
+        </div>
+      </footer>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-o9N1j7kP5Uft+RmseQGhX8Ss4i/WZk+3A1X3x0i0XvY="
+      crossorigin=""
+      defer
+    ></script>
+    <script src="/staging/concesion-superficial/app.js" type="module" defer></script>
+  </body>
+</html>
