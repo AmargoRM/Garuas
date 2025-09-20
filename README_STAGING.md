@@ -1,6 +1,6 @@
-# Evaluación de viabilidad de concesión de agua superficial (staging)
+# Pre-evaluación de concesión de agua superficial (staging)
 
-Esta página de evaluación de viabilidad se publica únicamente en el entorno de staging y debe compartirse solo con clientes que cuenten con el enlace privado.
+Esta página de pre-evaluación se publica únicamente en el entorno de staging y debe compartirse solo con clientes que cuenten con el enlace privado.
 
 ## Acceso restringido
 
