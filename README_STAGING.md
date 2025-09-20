@@ -1,6 +1,6 @@
-# Pre-evaluación de concesión de agua superficial (staging)
+# Evaluación de viabilidad de concesión de agua superficial (staging)
 
-Esta página de pre-evaluación se publica únicamente en el entorno de staging y debe compartirse solo con clientes que cuenten con el enlace privado.
+Esta página de evaluación de viabilidad se publica únicamente en el entorno de staging y debe compartirse solo con clientes que cuenten con el enlace privado.
 
 ## Acceso restringido
 
@@ -19,7 +19,7 @@ Esta página de pre-evaluación se publica únicamente en el entorno de staging 
 
 ## Envío de datos
 
-- El formulario intenta enviar un `POST` JSON a `/api/pre-evaluacion`.
+- El formulario intenta enviar un `POST` JSON a `/api/pre-evaluacion` (endpoint provisional utilizado en staging).
 - Si el endpoint no existe en el entorno de staging, la aplicación hace fallback a un `mailto:info@garuas.com` con el resumen de la solicitud.
 - Se registra la latitud y longitud seleccionada en el mapa junto con las respuestas del cuestionario y el estado preliminar (`admisible` o `requiere revisión`).
 
