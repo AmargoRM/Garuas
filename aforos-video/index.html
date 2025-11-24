@@ -28,7 +28,10 @@
   <!-- OpenCV.js para análisis automático en el navegador -->
   <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
 </head>
-<body class="min-h-screen bg-white text-slate-800">
+<body class="min-h-screen bg-gradient-to-b from-teal-50/40 via-white to-white text-slate-800">
+  <!-- Página experimental interna para aforos por video. -->
+  <!-- NO enlazar desde el menú ni indexar en buscadores. -->
+
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -59,9 +62,9 @@
     </nav>
   </header>
 
-  <main class="py-12">
-    <div class="mx-auto max-w-5xl px-4 space-y-10">
-      <header class="space-y-3 text-center">
+  <main class="py-12 md:py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 space-y-10">
+      <header class="space-y-3 text-center max-w-3xl mx-auto">
         <p class="inline-flex items-center rounded-full bg-teal-50 px-4 py-1 text-sm font-semibold text-teal-700 border border-teal-100">
           Beta interna
         </p>
@@ -102,7 +105,7 @@
           <div class="relative border rounded-xl overflow-hidden bg-black">
             <video
               id="video-preview"
-              class="w-full max-h-[360px] object-contain"
+              class="w-full max-h-[360px] object-contain hidden"
               controls
             ></video>
 
@@ -279,7 +282,7 @@
 
   <!-- FOOTER -->
   <footer class="border-t">
-    <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
       <div class="flex items-center gap-2">
         <img src="/assets/logo.png" alt="Garúa" class="h-6 w-6 object-contain rounded-full bg-white" />
         <span class="font-semibold text-slate-800">Garúa</span>
@@ -373,6 +376,7 @@
           videoPreview.classList.add("hidden");
           videoPreview.removeAttribute("src");
           videoStatus.textContent = "Ningún archivo seleccionado todavía.";
+          resetAnalisis();
           return;
         }
 
@@ -383,7 +387,7 @@
         previewUrl = URL.createObjectURL(file);
         videoPreview.src = previewUrl;
         videoPreview.classList.remove("hidden");
-        videoStatus.textContent = `Archivo cargado: ${file.name} (${Math.round(file.size / 1024)} kB)`;
+        videoStatus.textContent = \`Archivo cargado: \${file.name} (\${Math.round(file.size / 1024)} kB)\`;
         resetAnalisis();
       });
 
@@ -392,7 +396,7 @@
       });
 
       window.addEventListener("resize", () => {
-        if (!roiOverlay.classList.contains("hidden")) {
+        if (!roiOverlay.classList.contains("hidden") && !videoPreview.classList.contains("hidden")) {
           ajustarOverlayAlVideo();
         }
       });
@@ -400,18 +404,18 @@
 
     function resetAnalisis() {
       roi = null;
-      roiInfo.textContent = "Sin recuadro definido todavía.";
-      velPanel.classList.add("hidden");
-      velError.classList.add("hidden");
-      velError.textContent = "";
+      if (roiInfo) roiInfo.textContent = "Sin recuadro definido todavía.";
+      if (velPanel) velPanel.classList.add("hidden");
+      if (velError) {
+        velError.classList.add("hidden");
+        velError.textContent = "";
+      }
       ultimaVelocidad = null;
-      if (btnAnalizar) {
-        btnAnalizar.disabled = true;
-      }
-      if (velocidadInput) {
-        velocidadInput.value = "";
-      }
-      analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+      if (btnAnalizar) btnAnalizar.disabled = true;
+      if (velocidadInput) velocidadInput.value = "";
+      if (analisisEstado) analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+      limpiarOverlay();
+      actualizarEstadoAnalisis();
     }
 
     // --- Dibujo de recuadro sobre el video ---
@@ -479,7 +483,7 @@
           h: Math.round(norm.h * scaleY),
         };
 
-        roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
+        roiInfo.textContent = \`Recuadro definido: \${Math.round(roi.w)} x \${Math.round(roi.h)} px en el video.\`;
         analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
         actualizarEstadoAnalisis();
       });
@@ -489,6 +493,7 @@
       const rect = videoPreview.getBoundingClientRect();
       roiOverlay.width = rect.width;
       roiOverlay.height = rect.height;
+      limpiarOverlay();
     }
 
     function limpiarOverlay() {
@@ -517,6 +522,7 @@
 
     // --- Habilitar / deshabilitar botón de análisis ---
     function actualizarEstadoAnalisis() {
+      if (!anchoRealInput || !btnAnalizar) return;
       const anchoReal = parseFloat((anchoRealInput.value || "").replace(",", "."));
       if (roi && anchoReal > 0 && window._opencvReady) {
         btnAnalizar.disabled = false;
@@ -526,7 +532,9 @@
       }
     }
 
-    anchoRealInput.addEventListener("input", actualizarEstadoAnalisis);
+    if (anchoRealInput) {
+      anchoRealInput.addEventListener("input", actualizarEstadoAnalisis);
+    }
 
     // --- Análisis automático de velocidad con OpenCV.js ---
     if (btnAnalizar) {
@@ -668,11 +676,11 @@
 
       ultimaVelocidad = mediana;
 
-      velTexto.textContent = `Velocidad superficial estimada ≈ ${mediana.toFixed(3)} m/s`;
-      velDetalle.innerHTML = `
-        Promedio de ${velocidades.length} muestras independientes.<br />
-        Rango obtenido: ${Math.min(...velocidades).toFixed(3)} – ${Math.max(...velocidades).toFixed(3)} m/s.
-      `;
+      velTexto.textContent = \`Velocidad superficial estimada ≈ \${mediana.toFixed(3)} m/s\`;
+      velDetalle.innerHTML = \`
+        Promedio de \${velocidades.length} muestras independientes.<br />
+        Rango obtenido: \${Math.min(...velocidades).toFixed(3)} – \${Math.max(...velocidades).toFixed(3)} m/s.
+      \`;
       velPanel.classList.remove("hidden");
       analisisEstado.textContent = "Velocidad estimada lista. Puedes usarla en la calculadora de caudal.";
       btnAnalizar.disabled = false;
@@ -739,3 +747,4 @@
   </script>
 </body>
 </html>
+
