@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es-CR">
 <head>
@@ -25,16 +26,28 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="/assets/logo.png" />
 
+  <!-- Estado inicial de OpenCV + callback seguro -->
   <script>
     window._opencvReady = false;
-    window.onOpenCvReady = function onOpenCvReady() {
+    function onOpenCvReady() {
       window._opencvReady = true;
-    };
+      const status = document.getElementById("opencv-status");
+      if (status) {
+        status.textContent = "Motor de análisis (OpenCV.js) listo.";
+      }
+      if (typeof actualizarEstadoAnalisis === "function") {
+        actualizarEstadoAnalisis();
+      }
+    }
   </script>
+
   <!-- OpenCV.js para análisis automático en el navegador -->
   <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
 </head>
-<body class="min-h-screen bg-white text-slate-800">
+<body class="min-h-screen bg-gradient-to-b from-teal-50/40 via-white to-white text-slate-800">
+  <!-- Página experimental interna para aforos por video. -->
+  <!-- NO enlazar desde el menú ni indexar en buscadores. -->
+
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -65,9 +78,9 @@
     </nav>
   </header>
 
-  <main class="py-12">
-    <div class="mx-auto max-w-5xl px-4 space-y-10">
-      <header class="space-y-3 text-center">
+  <main class="py-12 md:py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 space-y-10">
+      <header class="space-y-3 text-center max-w-3xl mx-auto">
         <p class="inline-flex items-center rounded-full bg-teal-50 px-4 py-1 text-sm font-semibold text-teal-700 border border-teal-100">
           Beta interna
         </p>
@@ -77,6 +90,9 @@
         <p class="text-lg text-slate-600">
           Sube un video, marca una ventana de análisis sobre el flujo y deja que el sistema estime
           automáticamente una velocidad superficial media y un caudal aproximado.
+        </p>
+        <p id="opencv-status" class="text-xs text-slate-500">
+          Cargando motor de análisis (OpenCV.js)…
         </p>
       </header>
 
@@ -105,7 +121,7 @@
           <div class="relative border rounded-xl overflow-hidden bg-black">
             <video
               id="video-preview"
-              class="w-full max-h-[360px] object-contain"
+              class="w-full max-h-[360px] object-contain hidden"
               controls
             ></video>
 
@@ -282,7 +298,7 @@
 
   <!-- FOOTER -->
   <footer class="border-t">
-    <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
       <div class="flex items-center gap-2">
         <img src="/assets/logo.png" alt="Garúa" class="h-6 w-6 object-contain rounded-full bg-white" />
         <span class="font-semibold text-slate-800">Garúa</span>
@@ -297,6 +313,11 @@
   </footer>
 
   <script>
+    // Utilidad simple para parseo numérico con coma/punto
+    function num(value) {
+      return parseFloat(String(value || "").replace(",", "."));
+    }
+
     // --- Menú móvil ---
     const menuButton = document.getElementById("menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
@@ -325,12 +346,6 @@
 
     // Año dinámico
     document.getElementById("year").textContent = new Date().getFullYear();
-
-    // --- Estado de OpenCV ---
-    window.onOpenCvReady = function onOpenCvReady() {
-      window._opencvReady = true;
-      actualizarEstadoAnalisis();
-    };
 
     // --- Elementos principales ---
     const videoInput = document.getElementById("video-input");
@@ -372,6 +387,7 @@
           videoPreview.classList.add("hidden");
           videoPreview.removeAttribute("src");
           videoStatus.textContent = "Ningún archivo seleccionado todavía.";
+          resetAnalisis();
           return;
         }
 
@@ -388,11 +404,10 @@
 
       videoPreview.addEventListener("loadedmetadata", () => {
         ajustarOverlayAlVideo();
-        limpiarOverlay();
       });
 
       window.addEventListener("resize", () => {
-        if (roiOverlay && !roiOverlay.classList.contains("hidden")) {
+        if (!roiOverlay.classList.contains("hidden") && !videoPreview.classList.contains("hidden")) {
           ajustarOverlayAlVideo();
         }
       });
@@ -400,22 +415,21 @@
 
     function resetAnalisis() {
       roi = null;
-      roiInfo.textContent = "Sin recuadro definido todavía.";
-      velPanel.classList.add("hidden");
-      velError.classList.add("hidden");
-      velError.textContent = "";
+      if (roiInfo) roiInfo.textContent = "Sin recuadro definido todavía.";
+      if (velPanel) velPanel.classList.add("hidden");
+      if (velError) {
+        velError.classList.add("hidden");
+        velError.textContent = "";
+      }
       ultimaVelocidad = null;
-      if (btnAnalizar) {
-        btnAnalizar.disabled = true;
-      }
-      if (velocidadInput) {
-        velocidadInput.value = "";
-      }
+      if (btnAnalizar) btnAnalizar.disabled = true;
+      if (velocidadInput) velocidadInput.value = "";
       if (roiOverlay) {
         roiOverlay.classList.add("hidden");
         limpiarOverlay();
       }
-      analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+      if (analisisEstado) analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+      actualizarEstadoAnalisis();
     }
 
     // --- Dibujo de recuadro sobre el video ---
@@ -425,14 +439,15 @@
     if (btnDibujarRoi && roiOverlay && videoPreview) {
       btnDibujarRoi.addEventListener("click", () => {
         if (videoPreview.videoWidth === 0 || videoPreview.videoHeight === 0) {
-          const prepararTrasCarga = () => {
-            prepararDibujoRoi();
-          };
-          videoPreview.addEventListener("loadedmetadata", prepararTrasCarga, { once: true });
-          videoPreview.play().then(() => videoPreview.pause()).catch(() => {});
+          alert("Reproduce el video unos segundos y pausa antes de dibujar el recuadro.");
           return;
         }
-        prepararDibujoRoi();
+        ajustarOverlayAlVideo();
+        roiOverlay.classList.remove("hidden");
+        dibujandoRoi = false;
+        roi = null;
+        limpiarOverlay();
+        roiInfo.textContent = "Haz clic y arrastra sobre el video para definir el recuadro.";
       });
 
       roiOverlay.addEventListener("mousedown", (e) => {
@@ -488,26 +503,14 @@
       });
     }
 
-    function prepararDibujoRoi() {
-      if (!roiOverlay) return;
-      ajustarOverlayAlVideo();
-      roiOverlay.classList.remove("hidden");
-      dibujandoRoi = false;
-      roi = null;
-      limpiarOverlay();
-      roiInfo.textContent = "Haz clic y arrastra sobre el video para definir el recuadro.";
-    }
-
     function ajustarOverlayAlVideo() {
-      if (!videoPreview || !roiOverlay) return;
       const rect = videoPreview.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
       roiOverlay.width = rect.width;
       roiOverlay.height = rect.height;
+      limpiarOverlay();
     }
 
     function limpiarOverlay() {
-      if (!roiOverlay) return;
       const ctx = roiOverlay.getContext("2d");
       ctx.clearRect(0, 0, roiOverlay.width, roiOverlay.height);
     }
@@ -533,7 +536,8 @@
 
     // --- Habilitar / deshabilitar botón de análisis ---
     function actualizarEstadoAnalisis() {
-      const anchoReal = parseFloat((anchoRealInput.value || "").replace(",", "."));
+      if (!anchoRealInput || !btnAnalizar) return;
+      const anchoReal = num(anchoRealInput.value);
       if (roi && anchoReal > 0 && window._opencvReady) {
         btnAnalizar.disabled = false;
         analisisEstado.textContent = "Listo para analizar. Reproduce el video hasta un tramo estable y pulsa el botón.";
@@ -542,10 +546,8 @@
       }
     }
 
-    anchoRealInput.addEventListener("input", actualizarEstadoAnalisis);
-
-    if (window._opencvReady) {
-      actualizarEstadoAnalisis();
+    if (anchoRealInput) {
+      anchoRealInput.addEventListener("input", actualizarEstadoAnalisis);
     }
 
     // --- Análisis automático de velocidad con OpenCV.js ---
@@ -555,7 +557,7 @@
           alert("OpenCV.js todavía no está listo. Espera unos segundos y vuelve a intentar.");
           return;
         }
-        const anchoReal = parseFloat((anchoRealInput.value || "").replace(",", "."));
+        const anchoReal = num(anchoRealInput.value);
         if (!roi || !(anchoReal > 0)) {
           alert("Define primero el recuadro sobre el video y el ancho real en metros.");
           return;
@@ -683,7 +685,6 @@
         return;
       }
 
-      const promedio = velocidades.reduce((a, b) => a + b, 0) / velocidades.length;
       const mediana = velocidades.slice().sort((a, b) => a - b)[Math.floor(velocidades.length / 2)];
 
       ultimaVelocidad = mediana;
@@ -724,9 +725,9 @@
     // --- Calculadora de caudal ---
     if (btnCalcular && anchoInput && profundidadInput && velocidadInput && calcError && calcResult) {
       btnCalcular.addEventListener("click", () => {
-        const ancho = parseFloat((anchoInput.value || "").replace(",", "."));
-        const profundidad = parseFloat((profundidadInput.value || "").replace(",", "."));
-        const velocidad = parseFloat((velocidadInput.value || "").replace(",", "."));
+        const ancho = num(anchoInput.value);
+        const profundidad = num(profundidadInput.value);
+        const velocidad = num(velocidadInput.value);
 
         const valido =
           !isNaN(ancho) && ancho > 0 &&
