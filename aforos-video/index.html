@@ -253,19 +253,28 @@
     const videoInput = document.getElementById("video-input");
     const videoPreview = document.getElementById("video-preview");
     const videoStatus = document.getElementById("video-status");
+    let previewUrl = null;
 
     if (videoInput && videoPreview && videoStatus) {
       videoInput.addEventListener("change", () => {
         const file = videoInput.files && videoInput.files[0];
         if (!file) {
+          if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = null;
+          }
           videoPreview.classList.add("hidden");
           videoPreview.removeAttribute("src");
           videoStatus.textContent = "Ningún archivo seleccionado todavía.";
           return;
         }
 
-        const url = URL.createObjectURL(file);
-        videoPreview.src = url;
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+        }
+
+        previewUrl = URL.createObjectURL(file);
+        videoPreview.src = previewUrl;
         videoPreview.classList.remove("hidden");
         videoStatus.textContent = `Archivo cargado: ${file.name} (${Math.round(file.size / 1024)} kB)`;
       });
