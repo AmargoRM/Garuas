@@ -81,7 +81,8 @@
             <h2 class="text-xl font-bold text-teal-700">Prototipo visual</h2>
             <p class="mt-2 text-slate-700">
               Sube un video de prueba para simular el flujo de trabajo. El video se procesa localmente en tu navegador
-              (no se envía a ningún servidor).
+              (no se envía a ningún servidor). Luego puedes fijar dos puntos en fotogramas separados para estimar una velocidad
+              superficial aproximada.
             </p>
 
             <div class="mt-4 flex flex-col gap-3">
@@ -95,7 +96,8 @@
                 class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
               />
               <div class="rounded-xl border border-dashed border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
-                Por ahora esta herramienta es solo un prototipo visual; la estimación de caudal es independiente y aproximada.
+                Por ahora esta herramienta es un prototipo de laboratorio: realiza una estimación simple de velocidad superficial
+                a partir del video y calcula un caudal aproximado con una sección rectangular.
               </div>
               <p id="video-status" class="text-xs text-slate-500">
                 Ningún archivo seleccionado todavía.
@@ -110,8 +112,64 @@
             </div>
           </div>
 
+          <div class="border-t pt-6 space-y-4">
+            <h3 class="text-sm font-semibold text-teal-700">Estimación de velocidad desde el video (demo semi-automática)</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              1) Reproduce el video hasta un instante donde se vea claramente una partícula/trazo en el agua y pulsa
+              <span class="font-semibold">“Fijar punto inicial”</span>, luego haz clic sobre ese punto en la imagen.<br />
+              2) Avanza el video algunos segundos, pulsa <span class="font-semibold">“Fijar punto final”</span> y vuelve a hacer clic sobre la misma partícula (o sobre el frente de avance del flujo).<br />
+              3) Indica una escala aproximada en metros por píxel y el sistema calculará una velocidad superficial aproximada.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-[1.1fr,0.9fr] gap-4 items-start">
+              <div class="space-y-3">
+                <label for="escala-m-por-px" class="block text-xs font-semibold text-slate-700">
+                  Escala aproximada (metros por píxel)
+                </label>
+                <input
+                  id="escala-m-por-px"
+                  type="number"
+                  step="0.0001"
+                  min="0"
+                  class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  placeholder="Ej. 0.0015"
+                />
+                <p class="text-[11px] text-slate-500">
+                  Puedes obtenerla filmando una regla o una sección de longitud conocida y estimando cuántos metros representa el ancho visible del video.
+                </p>
+
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <button
+                    id="btn-punto-inicial"
+                    type="button"
+                    class="inline-flex items-center rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                  >
+                    Fijar punto inicial
+                  </button>
+                  <button
+                    id="btn-punto-final"
+                    type="button"
+                    class="inline-flex items-center rounded-lg bg-slate-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    Fijar punto final
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <canvas
+                  id="frame-canvas"
+                  class="w-full max-h-[220px] border rounded-lg bg-black hidden"
+                ></canvas>
+              </div>
+            </div>
+
+            <p id="velocidad-error" class="text-xs text-red-600 hidden mt-1"></p>
+            <p id="velocidad-resultado" class="text-xs text-teal-900 mt-1 hidden"></p>
+          </div>
+
           <!-- Calculadora simple de caudal -->
-          <div class="border-t pt-5">
+          <div class="border-t pt-6">
             <h3 class="text-lg font-semibold text-teal-700">Calculadora rápida de caudal (demo)</h3>
             <p class="mt-2 text-sm text-slate-600">
               Introduce una sección rectangular aproximada y una velocidad media estimada para obtener un caudal de
@@ -151,14 +209,23 @@
                 <label for="velocidad" class="block text-xs font-semibold text-slate-700 mb-1">
                   Velocidad media (m/s)
                 </label>
-                <input
-                  id="velocidad"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  placeholder="Ej. 0.35"
-                />
+                <div class="flex gap-2">
+                  <input
+                    id="velocidad"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+                    placeholder="Ej. 0.35"
+                  />
+                  <button
+                    id="btn-usar-velocidad"
+                    type="button"
+                    class="whitespace-nowrap rounded-lg border border-teal-600 px-2 py-1 text-[11px] font-semibold text-teal-700 hover:bg-teal-50"
+                  >
+                    Usar estimada
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -273,6 +340,130 @@
       });
     }
 
+    // --- Estimación de velocidad desde el video ---
+    const frameCanvas = document.getElementById("frame-canvas");
+    const escalaInput = document.getElementById("escala-m-por-px");
+    const btnPuntoInicial = document.getElementById("btn-punto-inicial");
+    const btnPuntoFinal = document.getElementById("btn-punto-final");
+    const velResultado = document.getElementById("velocidad-resultado");
+    const velError = document.getElementById("velocidad-error");
+
+    let modoSeleccion = null; // "inicio" | "fin" | null
+    let puntoInicial = null;
+    let puntoFinal = null;
+    let tInicial = null;
+    let tFinal = null;
+    let ultimaVelocidad = null; // m/s
+
+    function capturarFrameYEsperarClick(modo) {
+      if (!videoPreview || videoPreview.readyState < 2) {
+        velError.textContent = "Primero carga un video y déjalo reproducir hasta donde desees medir.";
+        velError.classList.remove("hidden");
+        return;
+      }
+
+      videoPreview.pause();
+
+      const w = videoPreview.videoWidth || 640;
+      const h = videoPreview.videoHeight || 360;
+
+      frameCanvas.width = w;
+      frameCanvas.height = h;
+      const ctx = frameCanvas.getContext("2d");
+      ctx.drawImage(videoPreview, 0, 0, w, h);
+      frameCanvas.classList.remove("hidden");
+
+      modoSeleccion = modo;
+
+      if (modo === "inicio") {
+        tInicial = videoPreview.currentTime;
+      } else if (modo === "fin") {
+        tFinal = videoPreview.currentTime;
+      }
+
+      velError.classList.add("hidden");
+      velResultado.classList.add("hidden");
+    }
+
+    if (btnPuntoInicial) {
+      btnPuntoInicial.addEventListener("click", () => {
+        capturarFrameYEsperarClick("inicio");
+      });
+    }
+
+    if (btnPuntoFinal) {
+      btnPuntoFinal.addEventListener("click", () => {
+        capturarFrameYEsperarClick("fin");
+      });
+    }
+
+    if (frameCanvas) {
+      frameCanvas.addEventListener("click", (event) => {
+        if (!modoSeleccion) {
+          return;
+        }
+
+        const rect = frameCanvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const ctx = frameCanvas.getContext("2d");
+        ctx.fillStyle = modoSeleccion === "inicio" ? "#22c55e" : "#ef4444";
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+
+        if (modoSeleccion === "inicio") {
+          puntoInicial = { x, y };
+        } else if (modoSeleccion === "fin") {
+          puntoFinal = { x, y };
+        }
+
+        modoSeleccion = null;
+        intentarCalcularVelocidad();
+      });
+    }
+
+    function intentarCalcularVelocidad() {
+      if (!puntoInicial || !puntoFinal || tInicial == null || tFinal == null) {
+        return;
+      }
+
+      const escala = parseFloat((escalaInput.value || "").replace(",", "."));
+
+      if (!(escala > 0)) {
+        velError.textContent = "Escala inválida. Ingresa un valor positivo en metros por píxel.";
+        velError.classList.remove("hidden");
+        velResultado.classList.add("hidden");
+        return;
+      }
+
+      const dt = Math.abs(tFinal - tInicial);
+      if (!(dt > 0)) {
+        velError.textContent = "El intervalo de tiempo entre el punto inicial y final debe ser mayor que cero.";
+        velError.classList.remove("hidden");
+        velResultado.classList.add("hidden");
+        return;
+      }
+
+      const dx = puntoFinal.x - puntoInicial.x;
+      const dy = puntoFinal.y - puntoInicial.y;
+      const dPx = Math.sqrt(dx * dx + dy * dy);
+
+      const dMetros = dPx * escala;
+      const v = dMetros / dt;
+
+      ultimaVelocidad = v;
+
+      velError.classList.add("hidden");
+      velResultado.innerHTML = `
+        <span class="font-semibold">Velocidad superficial estimada:</span>
+        ${v.toFixed(3)} m/s (distancia recorrida ≈ ${dMetros.toFixed(3)} m en ${dt.toFixed(2)} s).<br />
+        Copia este valor o pulsa <span class="font-semibold">“Usar estimada”</span> en la calculadora de caudal.
+      `;
+      velResultado.classList.remove("hidden");
+    }
+
     // --- Calculadora simple de caudal ---
     const anchoInput = document.getElementById("ancho");
     const profundidadInput = document.getElementById("profundidad");
@@ -280,12 +471,23 @@
     const btnCalcular = document.getElementById("btn-calcular");
     const calcError = document.getElementById("calc-error");
     const calcResult = document.getElementById("calc-result");
+    const btnUsarVelocidad = document.getElementById("btn-usar-velocidad");
+
+    if (btnUsarVelocidad) {
+      btnUsarVelocidad.addEventListener("click", () => {
+        if (ultimaVelocidad && velocidadInput) {
+          velocidadInput.value = ultimaVelocidad.toFixed(3);
+        } else {
+          alert("Primero estima una velocidad desde el video.");
+        }
+      });
+    }
 
     if (btnCalcular && anchoInput && profundidadInput && velocidadInput && calcError && calcResult) {
       btnCalcular.addEventListener("click", () => {
-        const ancho = parseFloat(anchoInput.value.replace(",", "."));
-        const profundidad = parseFloat(profundidadInput.value.replace(",", "."));
-        const velocidad = parseFloat(velocidadInput.value.replace(",", "."));
+        const ancho = parseFloat((anchoInput.value || "").replace(",", "."));
+        const profundidad = parseFloat((profundidadInput.value || "").replace(",", "."));
+        const velocidad = parseFloat((velocidadInput.value || "").replace(",", "."));
 
         const valido =
           !isNaN(ancho) && ancho > 0 &&
