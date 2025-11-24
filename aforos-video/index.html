@@ -62,8 +62,12 @@
   <main class="py-12">
     <div class="mx-auto max-w-4xl px-4 space-y-10">
       <header class="space-y-3 text-center">
-        <p class="inline-flex items-center rounded-full bg-teal-50 px-4 py-1 text-sm font-semibold text-teal-700 border border-teal-100">Beta interna</p>
-        <h1 class="text-3xl md:text-4xl font-extrabold">Herramienta experimental de aforos con video (beta interna)</h1>
+        <p class="inline-flex items-center rounded-full bg-teal-50 px-4 py-1 text-sm font-semibold text-teal-700 border border-teal-100">
+          Beta interna
+        </p>
+        <h1 class="text-3xl md:text-4xl font-extrabold">
+          Herramienta experimental de aforos con video (beta interna)
+        </h1>
         <p class="text-lg text-slate-600">
           Esta es una herramienta de prueba interna de Garúa para estimar caudales de agua mediante análisis de video.
           Está en desarrollo y no ofrece garantías de precisión.
@@ -91,7 +95,7 @@
                 class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
               />
               <div class="rounded-xl border border-dashed border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
-                Por ahora esta herramienta es solo un prototipo visual, todavía no procesa el video ni calcula el caudal.
+                Por ahora esta herramienta es solo un prototipo visual; la estimación de caudal es independiente y aproximada.
               </div>
               <p id="video-status" class="text-xs text-slate-500">
                 Ningún archivo seleccionado todavía.
@@ -308,15 +312,15 @@
 
         calcError.classList.add("hidden");
 
-        const area = ancho * profundidad;           // m²
-        const caudalM3s = area * velocidad;        // m³/s
-        const caudalLs = caudalM3s * 1000;         // L/s
+        const area = ancho * profundidad;   // m²
+        const caudalM3s = area * velocidad; // m³/s
+        const caudalLs = caudalM3s * 1000;  // L/s
 
         calcResult.innerHTML = `
           <p><span class="font-semibold">Área de la sección:</span> ${area.toFixed(3)} m²</p>
           <p><span class="font-semibold">Caudal aproximado:</span> ${caudalM3s.toFixed(3)} m³/s (${caudalLs.toFixed(1)} L/s)</p>
           <p class="mt-2 text-xs text-teal-900/80">
-            Resultado aproximado solo para fines de prueba. No usar como valor oficial de diseño o operación.
+            Resultado aproximado solo para fines de prueba. No usar como valor oficial de diseño u operación.
           </p>
         `;
         calcResult.classList.remove("hidden");
@@ -325,3 +329,4 @@
   </script>
 </body>
 </html>
+
