@@ -121,18 +121,25 @@
               controls
             ></video>
 
-            <!-- Canvas transparente por encima para dibujar el recuadro -->
+            <!-- Canvas transparente para recuadro -->
             <canvas
               id="roi-overlay"
-              class="absolute inset-0 cursor-crosshair hidden"
+              class="absolute inset-0 cursor-crosshair hidden touch-none"
             ></canvas>
+
+            <!-- Handle para resize en móvil -->
+            <div
+              id="roi-handle"
+              class="hidden absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 bg-white border border-teal-700 rounded-full shadow"
+            ></div>
           </div>
 
           <p class="text-xs text-slate-500 leading-relaxed">
-            👉 <span class="font-semibold">Paso 1:</span> Reproduce el video hasta un tramo representativo y pausa.<br />
-            👉 <span class="font-semibold">Paso 2:</span> Haz clic en
+            👉 <span class="font-semibold">Paso 1 (desktop):</span> Reproduce el video hasta un tramo representativo y pausa.<br />
+            👉 <span class="font-semibold">Paso 2 (desktop):</span> Haz clic en
             <span class="font-semibold">“Dibujar recuadro sobre el flujo”</span> y arrastra sobre el video la ventana
-            de análisis (zona donde se ve bien el movimiento del agua).<br />
+            de análisis.<br />
+            👉 <span class="font-semibold">En móvil:</span> El recuadro aparece por defecto; puedes moverlo y cambiar su tamaño con el dedo.
           </p>
 
           <div class="flex flex-wrap gap-3 items-center">
@@ -336,6 +343,7 @@
     const videoPreview = document.getElementById("video-preview");
     const videoStatus = document.getElementById("video-status");
     const roiOverlay = document.getElementById("roi-overlay");
+    const roiHandle = document.getElementById("roi-handle");
     const btnDibujarRoi = document.getElementById("btn-dibujar-roi");
     const btnReiniciarVideo = document.getElementById("btn-reiniciar-video");
     const roiInfo = document.getElementById("roi-info");
@@ -355,6 +363,8 @@
     const btnCalcularCaudal = document.getElementById("btn-calcular-caudal");
     const calcError = document.getElementById("calc-error");
     const calcResult = document.getElementById("calc-result");
+
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
     let previewUrl = null;
     let roi = null;             // {x, y, w, h} en coordenadas del video
@@ -384,12 +394,15 @@
         previewUrl = URL.createObjectURL(file);
         videoPreview.src = previewUrl;
         videoPreview.classList.remove("hidden");
-        videoStatus.textContent = `Archivo cargado: ${file.name} (${Math.round(file.size / 1024)} kB)`;
+        videoStatus.textContent = `Archivo cargado: ${Math.round(file.size / 1024)} kB`;
         resetAnalisis();
       });
 
       videoPreview.addEventListener("loadedmetadata", () => {
         ajustarOverlayAlVideo();
+        if (isMobile) {
+          initMobileROI();
+        }
       });
 
       videoPreview.addEventListener("ended", () => {
@@ -397,8 +410,10 @@
       });
 
       window.addEventListener("resize", () => {
-        if (!roiOverlay.classList.contains("hidden") && !videoPreview.classList.contains("hidden")) {
-          ajustarOverlayAlVideo();
+        if (!roiOverlay || videoPreview.classList.contains("hidden")) return;
+        ajustarOverlayAlVideo();
+        if (roi) {
+          renderRoiOnOverlay();
         }
       });
     }
@@ -430,6 +445,12 @@
         limpiarOverlay();
       }
 
+      if (roiHandle) {
+        roiHandle.classList.add("hidden");
+        roiHandle.style.left = "";
+        roiHandle.style.top = "";
+      }
+
       if (analisisEstado) {
         analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
       }
@@ -437,7 +458,7 @@
       actualizarEstadoAnalisis();
     }
 
-    // Reiniciar video conservando ROI dibujado en pantalla
+    // Reiniciar video conservando ROI
     function reiniciarVideo(mostrarMensaje) {
       if (!videoPreview || !videoPreview.src) return;
 
@@ -447,12 +468,7 @@
       if (roiOverlay && roi) {
         ajustarOverlayAlVideo();
         roiOverlay.classList.remove("hidden");
-        // Redibujar ROI según proporción
-        const px = (roi.x / videoPreview.videoWidth) * roiOverlay.width;
-        const py = (roi.y / videoPreview.videoHeight) * roiOverlay.height;
-        const pw = (roi.w / videoPreview.videoWidth) * roiOverlay.width;
-        const ph = (roi.h / videoPreview.videoHeight) * roiOverlay.height;
-        dibujarRectangulo(px, py, pw, ph);
+        renderRoiOnOverlay();
       }
 
       if (mostrarMensaje && analisisEstado) {
@@ -464,16 +480,15 @@
       actualizarEstadoAnalisis();
     }
 
-    // Botón reiniciar
     if (btnReiniciarVideo) {
       btnReiniciarVideo.addEventListener("click", () => reiniciarVideo(true));
     }
 
-    // --- Dibujo de recuadro sobre el video (mouse) ---
+    // --- Dibujo de recuadro sobre el video (solo desktop, mouse) ---
     let dibujandoRoi = false;
     let roiStart = null;
 
-    if (btnDibujarRoi && roiOverlay && videoPreview) {
+    if (!isMobile && btnDibujarRoi && roiOverlay && videoPreview) {
       btnDibujarRoi.addEventListener("click", () => {
         if (videoPreview.videoWidth === 0 || videoPreview.videoHeight === 0) {
           alert("Reproduce el video unos segundos y pausa antes de dibujar el recuadro.");
@@ -519,7 +534,6 @@
           return;
         }
 
-        // Convertir a coordenadas de video
         const scaleX = videoPreview.videoWidth / roiOverlay.width;
         const scaleY = videoPreview.videoHeight / roiOverlay.height;
 
@@ -532,6 +546,8 @@
 
         roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
         analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
+        roiOverlay.classList.remove("hidden");
+        renderRoiOnOverlay();
         actualizarEstadoAnalisis();
       });
     }
@@ -543,6 +559,7 @@
       dibujandoRoi = false;
       roi = null;
       limpiarOverlay();
+      if (roiHandle) roiHandle.classList.add("hidden");
       roiInfo.textContent = "Haz clic y arrastra sobre el video para definir el recuadro.";
     }
 
@@ -561,6 +578,14 @@
       ctx.clearRect(0, 0, roiOverlay.width, roiOverlay.height);
     }
 
+    function normalizarRect(x, y, w, h) {
+      const nx = w < 0 ? x + w : x;
+      const ny = h < 0 ? y + h : y;
+      const nw = Math.abs(w);
+      const nh = Math.abs(h);
+      return { x: nx, y: ny, w: nw, h: nh };
+    }
+
     function dibujarRectangulo(x, y, w, h) {
       limpiarOverlay();
       const ctx = roiOverlay.getContext("2d");
@@ -572,12 +597,192 @@
       ctx.fillRect(norm.x, norm.y, norm.w, norm.h);
     }
 
-    function normalizarRect(x, y, w, h) {
-      const nx = w < 0 ? x + w : x;
-      const ny = h < 0 ? y + h : y;
-      const nw = Math.abs(w);
-      const nh = Math.abs(h);
-      return { x: nx, y: ny, w: nw, h: nh };
+    // --- Helpers para convertir ROI entre video y overlay ---
+    function getDisplayRectFromRoi() {
+      if (!roi || !videoPreview || !roiOverlay) return null;
+      return {
+        x: (roi.x / videoPreview.videoWidth) * roiOverlay.width,
+        y: (roi.y / videoPreview.videoHeight) * roiOverlay.height,
+        w: (roi.w / videoPreview.videoWidth) * roiOverlay.width,
+        h: (roi.h / videoPreview.videoHeight) * roiOverlay.height,
+      };
+    }
+
+    function overlayRectToVideo(rect) {
+      const scaleX = videoPreview.videoWidth / roiOverlay.width;
+      const scaleY = videoPreview.videoHeight / roiOverlay.height;
+      return {
+        x: Math.round(rect.x * scaleX),
+        y: Math.round(rect.y * scaleY),
+        w: Math.round(rect.w * scaleX),
+        h: Math.round(rect.h * scaleY),
+      };
+    }
+
+    function updateRoiFromOverlayRect(rect) {
+      roi = overlayRectToVideo(rect);
+      roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
+      analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
+    }
+
+    function renderRoiOnOverlay() {
+      if (!roiOverlay || !roi) return;
+      const rect = getDisplayRectFromRoi();
+      if (!rect) return;
+      dibujarRectangulo(rect.x, rect.y, rect.w, rect.h);
+      if (roiHandle) {
+        roiHandle.classList.remove("hidden");
+        roiHandle.style.left = `${rect.x + rect.w}px`;
+        roiHandle.style.top = `${rect.y + rect.h}px`;
+      }
+    }
+
+    // --- ROI móvil: inicializar, mover y redimensionar ---
+    let mobileMoveData = null;
+    let mobileResizeData = null;
+    let mobileRoiInitialized = false;
+
+    function initMobileROI() {
+      if (!isMobile || !videoPreview || !roiOverlay) return;
+      if (!videoPreview.videoWidth || !videoPreview.videoHeight) return;
+
+      ajustarOverlayAlVideo();
+
+      const defaultW = videoPreview.videoWidth * 0.4;
+      const defaultH = videoPreview.videoHeight * 0.3;
+      const startX = (videoPreview.videoWidth - defaultW) / 2;
+      const startY = (videoPreview.videoHeight - defaultH) / 2;
+
+      roi = {
+        x: Math.round(startX),
+        y: Math.round(startY),
+        w: Math.round(defaultW),
+        h: Math.round(defaultH),
+      };
+
+      roiOverlay.classList.remove("hidden");
+      renderRoiOnOverlay();
+      roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
+      analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
+      setupMobileRoiInteractions();
+      actualizarEstadoAnalisis();
+    }
+
+    function setupMobileRoiInteractions() {
+      if (mobileRoiInitialized) return;
+      mobileRoiInitialized = true;
+
+      const overlayOptions = { passive: false };
+
+      // Mover ROI tocando dentro del rectángulo
+      roiOverlay.addEventListener("touchstart", (e) => {
+        const touch = e.touches[0];
+        if (!touch || !roi) return;
+        const rect = roiOverlay.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const displayRect = getDisplayRectFromRoi();
+        if (!displayRect) return;
+        if (
+          x >= displayRect.x &&
+          x <= displayRect.x + displayRect.w &&
+          y >= displayRect.y &&
+          y <= displayRect.y + displayRect.h
+        ) {
+          mobileMoveData = {
+            startX: x,
+            startY: y,
+            baseRect: displayRect,
+          };
+          e.preventDefault();
+        }
+      }, overlayOptions);
+
+      roiOverlay.addEventListener("touchmove", (e) => {
+        if (!mobileMoveData) return;
+        const touch = e.touches[0];
+        if (!touch) return;
+        const rect = roiOverlay.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const dx = x - mobileMoveData.startX;
+        const dy = y - mobileMoveData.startY;
+        const newRect = {
+          x: Math.min(
+            Math.max(mobileMoveData.baseRect.x + dx, 0),
+            roiOverlay.width - mobileMoveData.baseRect.w
+          ),
+          y: Math.min(
+            Math.max(mobileMoveData.baseRect.y + dy, 0),
+            roiOverlay.height - mobileMoveData.baseRect.h
+          ),
+          w: mobileMoveData.baseRect.w,
+          h: mobileMoveData.baseRect.h,
+        };
+        updateRoiFromOverlayRect(newRect);
+        renderRoiOnOverlay();
+        e.preventDefault();
+      }, overlayOptions);
+
+      roiOverlay.addEventListener("touchend", () => {
+        if (mobileMoveData) {
+          actualizarEstadoAnalisis();
+        }
+        mobileMoveData = null;
+      });
+
+      // Redimensionar con el handle
+      if (roiHandle) {
+        roiHandle.addEventListener("touchstart", (e) => {
+          const touch = e.touches[0];
+          if (!touch || !roi) return;
+          const rect = roiOverlay.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
+          const displayRect = getDisplayRectFromRoi();
+          if (!displayRect) return;
+          mobileResizeData = {
+            startX: x,
+            startY: y,
+            baseRect: displayRect,
+          };
+          e.preventDefault();
+        }, overlayOptions);
+
+        roiHandle.addEventListener("touchmove", (e) => {
+          if (!mobileResizeData) return;
+          const touch = e.touches[0];
+          if (!touch) return;
+          const rect = roiOverlay.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
+          const dx = x - mobileResizeData.startX;
+          const dy = y - mobileResizeData.startY;
+          const minSize = 20;
+          const newRect = {
+            x: mobileResizeData.baseRect.x,
+            y: mobileResizeData.baseRect.y,
+            w: Math.min(
+              Math.max(mobileResizeData.baseRect.w + dx, minSize),
+              roiOverlay.width - mobileResizeData.baseRect.x
+            ),
+            h: Math.min(
+              Math.max(mobileResizeData.baseRect.h + dy, minSize),
+              roiOverlay.height - mobileResizeData.baseRect.y
+            ),
+          };
+          updateRoiFromOverlayRect(newRect);
+          renderRoiOnOverlay();
+          e.preventDefault();
+        }, overlayOptions);
+
+        roiHandle.addEventListener("touchend", () => {
+          if (mobileResizeData) {
+            actualizarEstadoAnalisis();
+          }
+          mobileResizeData = null;
+        });
+      }
     }
 
     // --- Habilitar / deshabilitar botón de análisis ---
@@ -595,14 +800,12 @@
     if (anchoRealInput) {
       anchoRealInput.addEventListener("input", () => {
         actualizarEstadoAnalisis();
-        // UX: copiar el ancho real como ancho de lámina por defecto
         if (anchoCauceInput && !anchoCauceInput.value) {
           anchoCauceInput.value = anchoRealInput.value;
         }
       });
     }
 
-    // Si OpenCV ya cargó antes de que se definiera esta función, actualizamos ahora
     if (window._opencvReady) {
       actualizarEstadoAnalisis();
     }
@@ -643,7 +846,6 @@
         videoPreview.pause();
       }
 
-      // Evitar quedarnos sin video hacia el final
       const margen = dtObjetivo * (totalMuestras + 1);
       let tiempoBase = Math.min(
         videoPreview.currentTime,
@@ -772,7 +974,14 @@
       });
     }
 
-    if (btnCalcularCaudal && anchoCauceInput && profundidadMediaInput && velocidadMediaInput && calcError && calcResult) {
+    if (
+      btnCalcularCaudal &&
+      anchoCauceInput &&
+      profundidadMediaInput &&
+      velocidadMediaInput &&
+      calcError &&
+      calcResult
+    ) {
       btnCalcularCaudal.addEventListener("click", () => {
         const ancho = num(anchoCauceInput.value);
         const profundidad = num(profundidadMediaInput.value);
@@ -805,4 +1014,3 @@
   </script>
 </body>
 </html>
-
