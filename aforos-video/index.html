@@ -25,16 +25,25 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="/assets/logo.png" />
 
+  <!-- Estado inicial de OpenCV + callback -->
   <script>
     window._opencvReady = false;
-    window.onOpenCvReady = function onOpenCvReady() {
+    function onOpenCvReady() {
       window._opencvReady = true;
-    };
+      const status = document.getElementById("opencv-status");
+      if (status) {
+        status.textContent = "Motor de análisis (OpenCV.js) listo.";
+      }
+      if (typeof actualizarEstadoAnalisis === "function") {
+        actualizarEstadoAnalisis();
+      }
+    }
   </script>
+
   <!-- OpenCV.js para análisis automático en el navegador -->
   <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
 </head>
-<body class="min-h-screen bg-white text-slate-800">
+<body class="min-h-screen bg-gradient-to-b from-teal-50/40 via-white to-white text-slate-800">
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -65,9 +74,9 @@
     </nav>
   </header>
 
-  <main class="py-12">
-    <div class="mx-auto max-w-4xl px-4 space-y-10">
-      <header class="space-y-3 text-center">
+  <main class="py-12 md:py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 space-y-10">
+      <header class="space-y-3 text-center max-w-3xl mx-auto">
         <p class="inline-flex items-center rounded-full bg-teal-50 px-4 py-1 text-sm font-semibold text-teal-700 border border-teal-100">
           Beta interna
         </p>
@@ -78,10 +87,13 @@
           Sube un video, marca una ventana de análisis sobre el flujo y deja que el sistema estime
           automáticamente una velocidad superficial media y un caudal aproximado.
         </p>
+        <p id="opencv-status" class="text-xs text-slate-500">
+          Cargando motor de análisis (OpenCV.js)…
+        </p>
       </header>
 
       <section class="flex flex-col items-center gap-8">
-        <!-- Columna única: video + análisis automático -->
+        <!-- Columna única: video + análisis automático + caudal -->
         <div class="w-full max-w-3xl rounded-2xl border bg-white p-6 shadow-sm space-y-5">
           <h2 class="text-xl font-bold text-teal-700">1. Video y zona de captura</h2>
 
@@ -185,7 +197,7 @@
           <p id="velocidad-error" class="text-xs text-red-600 hidden"></p>
 
           <!-- Calculadora de caudal -->
-          <div class="border rounded-xl bg-white px-4 py-4 space-y-4 text-sm">
+          <div class="border rounded-xl bg-white px-4 py-4 space-y-4 text-sm mt-4">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <h3 class="text-base font-semibold text-teal-700">2. Caudal aproximado (sección rectangular)</h3>
               <button
@@ -237,12 +249,12 @@
               <button
                 id="btn-calcular-caudal"
                 type="button"
-                class="inline-flex items-center rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600"
+                class="inline-flex items-center justify-center rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600"
               >
                 Calcular caudal
               </button>
               <p id="calc-error" class="text-xs text-red-600 hidden">
-                Por favor, ingresa valores numéricos mayores que cero.
+                Ingresa valores válidos (&gt; 0) para ancho, profundidad y velocidad.
               </p>
             </div>
 
@@ -270,7 +282,7 @@
 
   <!-- FOOTER -->
   <footer class="border-t">
-    <div class="mx-auto max-w-6xl px-4 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-4 items-center justify-between text-sm text-slate-600">
       <div class="flex items-center gap-2">
         <img src="/assets/logo.png" alt="Garúa" class="h-6 w-6 object-contain rounded-full bg-white" />
         <span class="font-semibold text-slate-800">Garúa</span>
@@ -285,6 +297,11 @@
   </footer>
 
   <script>
+    // Utilidad para parsear números con coma o punto
+    function num(value) {
+      return parseFloat(String(value || "").replace(",", "."));
+    }
+
     // --- Menú móvil ---
     const menuButton = document.getElementById("menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
@@ -314,13 +331,7 @@
     // Año dinámico
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // --- Estado de OpenCV ---
-    window.onOpenCvReady = function onOpenCvReady() {
-      window._opencvReady = true;
-      actualizarEstadoAnalisis();
-    };
-
-    // --- Elementos principales ---
+    // --- Elementos principales de la herramienta ---
     const videoInput = document.getElementById("video-input");
     const videoPreview = document.getElementById("video-preview");
     const videoStatus = document.getElementById("video-status");
@@ -335,6 +346,8 @@
     const velTexto = document.getElementById("velocidad-texto");
     const velDetalle = document.getElementById("velocidad-detalle");
     const velError = document.getElementById("velocidad-error");
+
+    // Calculadora de caudal
     const anchoCauceInput = document.getElementById("ancho-cauce");
     const profundidadMediaInput = document.getElementById("profundidad-media");
     const velocidadMediaInput = document.getElementById("velocidad-media");
@@ -343,12 +356,8 @@
     const calcError = document.getElementById("calc-error");
     const calcResult = document.getElementById("calc-result");
 
-    if (btnReiniciarVideo) {
-      btnReiniciarVideo.addEventListener("click", () => reiniciarVideo(true));
-    }
-
     let previewUrl = null;
-    let roi = null; // {x, y, w, h} en coordenadas de video
+    let roi = null;             // {x, y, w, h} en coordenadas del video
     let ultimaVelocidad = null; // m/s
 
     // --- Carga de video ---
@@ -364,6 +373,7 @@
           videoPreview.classList.add("hidden");
           videoPreview.removeAttribute("src");
           videoStatus.textContent = "Ningún archivo seleccionado todavía.";
+          resetAnalisis();
           return;
         }
 
@@ -380,7 +390,6 @@
 
       videoPreview.addEventListener("loadedmetadata", () => {
         ajustarOverlayAlVideo();
-        limpiarOverlay();
       });
 
       videoPreview.addEventListener("ended", () => {
@@ -388,148 +397,143 @@
       });
 
       window.addEventListener("resize", () => {
-        if (roiOverlay && !roiOverlay.classList.contains("hidden")) {
+        if (!roiOverlay.classList.contains("hidden") && !videoPreview.classList.contains("hidden")) {
           ajustarOverlayAlVideo();
         }
       });
     }
 
+    // --- Reset de análisis completo ---
     function resetAnalisis() {
       roi = null;
-      roiInfo.textContent = "Sin recuadro definido todavía.";
-      velPanel.classList.add("hidden");
-      velError.classList.add("hidden");
-      velError.textContent = "";
       ultimaVelocidad = null;
-      if (anchoRealInput) {
-        anchoRealInput.value = "";
+
+      if (roiInfo) roiInfo.textContent = "Sin recuadro definido todavía.";
+      if (velPanel) velPanel.classList.add("hidden");
+      if (velError) {
+        velError.classList.add("hidden");
+        velError.textContent = "";
       }
-      if (velocidadMediaInput) {
-        velocidadMediaInput.value = "";
-      }
-      if (anchoCauceInput) {
-        anchoCauceInput.value = "";
-      }
-      if (profundidadMediaInput) {
-        profundidadMediaInput.value = "";
-      }
-      if (calcError) {
-        calcError.classList.add("hidden");
-      }
+      if (btnAnalizar) btnAnalizar.disabled = true;
+
+      if (velocidadMediaInput) velocidadMediaInput.value = "";
+      if (anchoCauceInput) anchoCauceInput.value = "";
+      if (profundidadMediaInput) profundidadMediaInput.value = "";
+      if (calcError) calcError.classList.add("hidden");
       if (calcResult) {
         calcResult.classList.add("hidden");
         calcResult.textContent = "";
       }
-      if (btnAnalizar) {
-        btnAnalizar.disabled = true;
-      }
+
       if (roiOverlay) {
         roiOverlay.classList.add("hidden");
         limpiarOverlay();
       }
-      analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+
+      if (analisisEstado) {
+        analisisEstado.textContent = "Define el recuadro y el ancho real para habilitar el análisis.";
+      }
+
+      actualizarEstadoAnalisis();
     }
 
-    // --- Dibujo de recuadro sobre el video ---
+    // Reiniciar video conservando ROI dibujado en pantalla
+    function reiniciarVideo(mostrarMensaje) {
+      if (!videoPreview || !videoPreview.src) return;
+
+      videoPreview.pause();
+      videoPreview.currentTime = 0;
+
+      if (roiOverlay && roi) {
+        ajustarOverlayAlVideo();
+        roiOverlay.classList.remove("hidden");
+        // Redibujar ROI según proporción
+        const px = (roi.x / videoPreview.videoWidth) * roiOverlay.width;
+        const py = (roi.y / videoPreview.videoHeight) * roiOverlay.height;
+        const pw = (roi.w / videoPreview.videoWidth) * roiOverlay.width;
+        const ph = (roi.h / videoPreview.videoHeight) * roiOverlay.height;
+        dibujarRectangulo(px, py, pw, ph);
+      }
+
+      if (mostrarMensaje && analisisEstado) {
+        analisisEstado.textContent = "Video reiniciado. Puedes reproducirlo de nuevo y volver a analizar.";
+      } else if (roi && anchoRealInput && anchoRealInput.value && analisisEstado) {
+        analisisEstado.textContent = "Reproduce el video y vuelve a ejecutar el análisis cuando quieras.";
+      }
+
+      actualizarEstadoAnalisis();
+    }
+
+    // Botón reiniciar
+    if (btnReiniciarVideo) {
+      btnReiniciarVideo.addEventListener("click", () => reiniciarVideo(true));
+    }
+
+    // --- Dibujo de recuadro sobre el video (mouse) ---
     let dibujandoRoi = false;
     let roiStart = null;
 
     if (btnDibujarRoi && roiOverlay && videoPreview) {
       btnDibujarRoi.addEventListener("click", () => {
         if (videoPreview.videoWidth === 0 || videoPreview.videoHeight === 0) {
-          const prepararTrasCarga = () => {
-            prepararDibujoRoi();
-          };
-          videoPreview.addEventListener("loadedmetadata", prepararTrasCarga, { once: true });
-          videoPreview.play().then(() => videoPreview.pause()).catch(() => {});
+          alert("Reproduce el video unos segundos y pausa antes de dibujar el recuadro.");
           return;
         }
         prepararDibujoRoi();
       });
 
       roiOverlay.addEventListener("mousedown", (e) => {
-        iniciarDibujoRoi(e.clientX, e.clientY);
+        if (roiOverlay.classList.contains("hidden")) return;
+        dibujandoRoi = true;
+        const rect = roiOverlay.getBoundingClientRect();
+        roiStart = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        };
+        dibujarRectangulo(roiStart.x, roiStart.y, 0, 0);
       });
 
       roiOverlay.addEventListener("mousemove", (e) => {
-        continuarDibujoRoi(e.clientX, e.clientY);
+        if (!dibujandoRoi || !roiStart) return;
+        const rect = roiOverlay.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        dibujarRectangulo(roiStart.x, roiStart.y, x - roiStart.x, y - roiStart.y);
       });
 
       roiOverlay.addEventListener("mouseup", (e) => {
-        finalizarDibujoRoi(e.clientX, e.clientY);
-      });
+        if (!dibujandoRoi || !roiStart) return;
+        dibujandoRoi = false;
+        const rect = roiOverlay.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = x - roiStart.x;
+        const h = y - roiStart.y;
+        const norm = normalizarRect(roiStart.x, roiStart.y, w, h);
 
-      roiOverlay.addEventListener("touchstart", (e) => {
-        const touch = e.touches[0];
-        if (!touch) return;
-        e.preventDefault();
-        iniciarDibujoRoi(touch.clientX, touch.clientY);
-      });
+        if (norm.w < 10 || norm.h < 10) {
+          roiInfo.textContent = "Recuadro demasiado pequeño. Intenta nuevamente.";
+          roi = null;
+          limpiarOverlay();
+          actualizarEstadoAnalisis();
+          return;
+        }
 
-      roiOverlay.addEventListener("touchmove", (e) => {
-        const touch = e.touches[0];
-        if (!touch) return;
-        e.preventDefault();
-        continuarDibujoRoi(touch.clientX, touch.clientY);
-      });
+        // Convertir a coordenadas de video
+        const scaleX = videoPreview.videoWidth / roiOverlay.width;
+        const scaleY = videoPreview.videoHeight / roiOverlay.height;
 
-      roiOverlay.addEventListener("touchend", (e) => {
-        const touch = e.changedTouches[0];
-        if (!touch) return;
-        e.preventDefault();
-        finalizarDibujoRoi(touch.clientX, touch.clientY);
-      });
-    }
+        roi = {
+          x: Math.round(norm.x * scaleX),
+          y: Math.round(norm.y * scaleY),
+          w: Math.round(norm.w * scaleX),
+          h: Math.round(norm.h * scaleY),
+        };
 
-    function iniciarDibujoRoi(clientX, clientY) {
-      if (roiOverlay.classList.contains("hidden")) return;
-      dibujandoRoi = true;
-      const rect = roiOverlay.getBoundingClientRect();
-      roiStart = {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
-      };
-      dibujarRectangulo(roiStart.x, roiStart.y, 0, 0);
-    }
-
-    function continuarDibujoRoi(clientX, clientY) {
-      if (!dibujandoRoi || !roiStart) return;
-      const rect = roiOverlay.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      dibujarRectangulo(roiStart.x, roiStart.y, x - roiStart.x, y - roiStart.y);
-    }
-
-    function finalizarDibujoRoi(clientX, clientY) {
-      if (!dibujandoRoi || !roiStart) return;
-      dibujandoRoi = false;
-      const rect = roiOverlay.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const w = x - roiStart.x;
-      const h = y - roiStart.y;
-      const norm = normalizarRect(roiStart.x, roiStart.y, w, h);
-      if (norm.w < 10 || norm.h < 10) {
-        roiInfo.textContent = "Recuadro demasiado pequeño. Intenta nuevamente.";
-        roi = null;
-        limpiarOverlay();
+        roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
+        analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
         actualizarEstadoAnalisis();
-        return;
-      }
-
-      const scaleX = videoPreview.videoWidth / roiOverlay.width;
-      const scaleY = videoPreview.videoHeight / roiOverlay.height;
-
-      roi = {
-        x: Math.round(norm.x * scaleX),
-        y: Math.round(norm.y * scaleY),
-        w: Math.round(norm.w * scaleX),
-        h: Math.round(norm.h * scaleY),
-      };
-
-      roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
-      analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
-      actualizarEstadoAnalisis();
+      });
     }
 
     function prepararDibujoRoi() {
@@ -548,6 +552,7 @@
       if (!rect.width || !rect.height) return;
       roiOverlay.width = rect.width;
       roiOverlay.height = rect.height;
+      limpiarOverlay();
     }
 
     function limpiarOverlay() {
@@ -577,7 +582,8 @@
 
     // --- Habilitar / deshabilitar botón de análisis ---
     function actualizarEstadoAnalisis() {
-      const anchoReal = parseFloat((anchoRealInput.value || "").replace(",", "."));
+      if (!anchoRealInput || !btnAnalizar) return;
+      const anchoReal = num(anchoRealInput.value);
       if (roi && anchoReal > 0 && window._opencvReady) {
         btnAnalizar.disabled = false;
         analisisEstado.textContent = "Listo para analizar. Reproduce el video hasta un tramo estable y pulsa el botón.";
@@ -586,35 +592,17 @@
       }
     }
 
-    function reiniciarVideo(mostrarMensaje) {
-      if (!videoPreview || !videoPreview.src) return;
-      videoPreview.pause();
-      videoPreview.currentTime = 0;
-      if (roiOverlay && roi) {
-        ajustarOverlayAlVideo();
-        roiOverlay.classList.remove("hidden");
-        dibujarRectangulo(
-          (roi.x / videoPreview.videoWidth) * roiOverlay.width,
-          (roi.y / videoPreview.videoHeight) * roiOverlay.height,
-          (roi.w / videoPreview.videoWidth) * roiOverlay.width,
-          (roi.h / videoPreview.videoHeight) * roiOverlay.height
-        );
-      }
-      if (mostrarMensaje) {
-        analisisEstado.textContent = "Video reiniciado. Puedes reproducirlo de nuevo y volver a analizar.";
-      } else if (roi && anchoRealInput.value) {
-        analisisEstado.textContent = "Reproduce el video y vuelve a ejecutar el análisis cuando quieras.";
-      }
-      actualizarEstadoAnalisis();
+    if (anchoRealInput) {
+      anchoRealInput.addEventListener("input", () => {
+        actualizarEstadoAnalisis();
+        // UX: copiar el ancho real como ancho de lámina por defecto
+        if (anchoCauceInput && !anchoCauceInput.value) {
+          anchoCauceInput.value = anchoRealInput.value;
+        }
+      });
     }
 
-    anchoRealInput.addEventListener("input", () => {
-      actualizarEstadoAnalisis();
-      if (anchoCauceInput) {
-        anchoCauceInput.value = anchoRealInput.value;
-      }
-    });
-
+    // Si OpenCV ya cargó antes de que se definiera esta función, actualizamos ahora
     if (window._opencvReady) {
       actualizarEstadoAnalisis();
     }
@@ -626,55 +614,12 @@
           alert("OpenCV.js todavía no está listo. Espera unos segundos y vuelve a intentar.");
           return;
         }
-        const anchoReal = parseFloat((anchoRealInput.value || "").replace(",", "."));
+        const anchoReal = num(anchoRealInput.value);
         if (!roi || !(anchoReal > 0)) {
           alert("Define primero el recuadro sobre el video y el ancho real en metros.");
           return;
         }
         ejecutarAnalisisVelocidad(roi, anchoReal);
-      });
-    }
-
-    // --- Calculadora de caudal ---
-    if (btnUsarVelocidad && velocidadMediaInput) {
-      btnUsarVelocidad.addEventListener("click", () => {
-        if (ultimaVelocidad && ultimaVelocidad > 0) {
-          velocidadMediaInput.value = ultimaVelocidad.toFixed(3);
-        } else {
-          alert("Primero ejecuta el análisis automático de velocidad.");
-        }
-      });
-    }
-
-    if (btnCalcularCaudal && anchoCauceInput && profundidadMediaInput && velocidadMediaInput && calcError && calcResult) {
-      btnCalcularCaudal.addEventListener("click", () => {
-        const ancho = parseFloat((anchoCauceInput.value || "").replace(",", "."));
-        const profundidad = parseFloat((profundidadMediaInput.value || "").replace(",", "."));
-        const velocidad = parseFloat((velocidadMediaInput.value || "").replace(",", "."));
-
-        const valido =
-          !isNaN(ancho) && ancho > 0 &&
-          !isNaN(profundidad) && profundidad > 0 &&
-          !isNaN(velocidad) && velocidad > 0;
-
-        if (!valido) {
-          calcError.classList.remove("hidden");
-          calcResult.classList.add("hidden");
-          calcResult.textContent = "";
-          return;
-        }
-
-        calcError.classList.add("hidden");
-
-        const area = ancho * profundidad;   // m²
-        const caudalM3s = area * velocidad; // m³/s
-        const caudalLs = caudalM3s * 1000;  // L/s
-
-        calcResult.innerHTML = `
-          <p><span class="font-semibold">Área de la sección:</span> ${area.toFixed(3)} m²</p>
-          <p><span class="font-semibold">Caudal aproximado:</span> ${caudalM3s.toFixed(3)} m³/s (${caudalLs.toFixed(1)} L/s)</p>
-        `;
-        calcResult.classList.remove("hidden");
       });
     }
 
@@ -692,15 +637,18 @@
 
       const totalMuestras = 15;
       const dtObjetivo = 0.15;
-
       const velocidades = [];
 
       if (!videoPreview.paused) {
         videoPreview.pause();
       }
 
+      // Evitar quedarnos sin video hacia el final
       const margen = dtObjetivo * (totalMuestras + 1);
-      let tiempoBase = Math.min(videoPreview.currentTime, Math.max(videoPreview.duration - margen, 0));
+      let tiempoBase = Math.min(
+        videoPreview.currentTime,
+        Math.max(videoPreview.duration - margen, 0)
+      );
       if (videoPreview.currentTime >= videoPreview.duration - 0.1) {
         videoPreview.currentTime = 0;
         tiempoBase = 0;
@@ -709,7 +657,6 @@
       for (let i = 0; i < totalMuestras; i++) {
         const t1 = tiempoBase + i * dtObjetivo;
         const t2 = t1 + dtObjetivo;
-
         if (t2 >= videoPreview.duration) break;
 
         await seekVideo(videoPreview, t1);
@@ -729,13 +676,7 @@
         let puntos0 = new cv.Mat();
         const calidad = 0.01;
         const minDist = 5;
-        cv.goodFeaturesToTrack(
-          roiMat1,
-          puntos0,
-          80,
-          calidad,
-          minDist
-        );
+        cv.goodFeaturesToTrack(roiMat1, puntos0, 80, calidad, minDist);
 
         if (puntos0.rows < 5) {
           frame1.delete(); frame2.delete();
@@ -748,14 +689,7 @@
         let puntos1 = new cv.Mat();
         let status = new cv.Mat();
         let err = new cv.Mat();
-        cv.calcOpticalFlowPyrLK(
-          roiMat1,
-          roiMat2,
-          puntos0,
-          puntos1,
-          status,
-          err
-        );
+        cv.calcOpticalFlowPyrLK(roiMat1, roiMat2, puntos0, puntos1, status, err);
 
         let sumDx = 0;
         let sumDy = 0;
@@ -802,9 +736,7 @@
         return;
       }
 
-      const promedio = velocidades.reduce((a, b) => a + b, 0) / velocidades.length;
       const mediana = velocidades.slice().sort((a, b) => a - b)[Math.floor(velocidades.length / 2)];
-
       ultimaVelocidad = mediana;
 
       velTexto.textContent = `Velocidad superficial estimada ≈ ${mediana.toFixed(3)} m/s`;
@@ -813,7 +745,7 @@
         Rango obtenido: ${Math.min(...velocidades).toFixed(3)} – ${Math.max(...velocidades).toFixed(3)} m/s.
       `;
       velPanel.classList.remove("hidden");
-      analisisEstado.textContent = "Velocidad estimada lista. Puedes usarla en la calculadora de caudal.";
+      analisisEstado.textContent = "Velocidad estimada lista. Usa el valor como referencia, no como dato de diseño.";
       btnAnalizar.disabled = false;
       actualizarEstadoAnalisis();
     }
@@ -829,6 +761,48 @@
       });
     }
 
+    // --- Calculadora de caudal ---
+    if (btnUsarVelocidad && velocidadMediaInput) {
+      btnUsarVelocidad.addEventListener("click", () => {
+        if (ultimaVelocidad && ultimaVelocidad > 0) {
+          velocidadMediaInput.value = ultimaVelocidad.toFixed(3);
+        } else {
+          alert("Primero ejecuta el análisis automático de velocidad.");
+        }
+      });
+    }
+
+    if (btnCalcularCaudal && anchoCauceInput && profundidadMediaInput && velocidadMediaInput && calcError && calcResult) {
+      btnCalcularCaudal.addEventListener("click", () => {
+        const ancho = num(anchoCauceInput.value);
+        const profundidad = num(profundidadMediaInput.value);
+        const velocidad = num(velocidadMediaInput.value);
+
+        const valido =
+          !isNaN(ancho) && ancho > 0 &&
+          !isNaN(profundidad) && profundidad > 0 &&
+          !isNaN(velocidad) && velocidad > 0;
+
+        if (!valido) {
+          calcError.classList.remove("hidden");
+          calcResult.classList.add("hidden");
+          calcResult.textContent = "";
+          return;
+        }
+
+        const area = ancho * profundidad;          // m²
+        const caudalM3s = area * velocidad;        // m³/s
+        const caudalLs = caudalM3s * 1000;         // L/s
+
+        calcError.classList.add("hidden");
+        calcResult.innerHTML = `
+          <p><span class="font-semibold">Área de la sección:</span> ${area.toFixed(3)} m²</p>
+          <p><span class="font-semibold">Caudal aproximado:</span> ${caudalM3s.toFixed(3)} m³/s (${caudalLs.toFixed(1)} L/s)</p>
+        `;
+        calcResult.classList.remove("hidden");
+      });
+    }
   </script>
 </body>
 </html>
+
