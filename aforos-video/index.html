@@ -34,7 +34,6 @@
       if (status) {
         status.textContent = "Motor de análisis (OpenCV.js) listo.";
       }
-      // actualizarEstadoAnalisis se define más abajo; solo se llamará si existe
       if (typeof actualizarEstadoAnalisis === "function") {
         actualizarEstadoAnalisis();
       }
@@ -45,9 +44,6 @@
   <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-teal-50/40 via-white to-white text-slate-800">
-  <!-- Página experimental interna para aforos por video. -->
-  <!-- NO enlazar desde el menú ni indexar en buscadores. -->
-
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -89,7 +85,7 @@
         </h1>
         <p class="text-lg text-slate-600">
           Sube un video, marca una ventana de análisis sobre el flujo y deja que el sistema estime
-          automáticamente una velocidad superficial media aproximada.
+          automáticamente una velocidad superficial media y un caudal aproximado.
         </p>
         <p id="opencv-status" class="text-xs text-slate-500">
           Cargando motor de análisis (OpenCV.js)…
@@ -421,6 +417,8 @@
       if (btnAnalizar) btnAnalizar.disabled = true;
 
       if (velocidadMediaInput) velocidadMediaInput.value = "";
+      if (anchoCauceInput) anchoCauceInput.value = "";
+      if (profundidadMediaInput) profundidadMediaInput.value = "";
       if (calcError) calcError.classList.add("hidden");
       if (calcResult) {
         calcResult.classList.add("hidden");
@@ -471,7 +469,7 @@
       btnReiniciarVideo.addEventListener("click", () => reiniciarVideo(true));
     }
 
-    // --- Dibujo de recuadro sobre el video ---
+    // --- Dibujo de recuadro sobre el video (mouse) ---
     let dibujandoRoi = false;
     let roiStart = null;
 
@@ -529,10 +527,8 @@
           x: Math.round(norm.x * scaleX),
           y: Math.round(norm.y * scaleY),
           w: Math.round(norm.w * scaleX),
-          h: Math.round(norm.h * scaleX * (scaleY / scaleX)) // simplificado, pero w/h escalados
+          h: Math.round(norm.h * scaleY),
         };
-        // Corregir altura usando scaleY directamente
-        roi.h = Math.round(norm.h * scaleY);
 
         roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
         analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
@@ -597,7 +593,13 @@
     }
 
     if (anchoRealInput) {
-      anchoRealInput.addEventListener("input", actualizarEstadoAnalisis);
+      anchoRealInput.addEventListener("input", () => {
+        actualizarEstadoAnalisis();
+        // UX: copiar el ancho real como ancho de lámina por defecto
+        if (anchoCauceInput && !anchoCauceInput.value) {
+          anchoCauceInput.value = anchoRealInput.value;
+        }
+      });
     }
 
     // Si OpenCV ya cargó antes de que se definiera esta función, actualizamos ahora
@@ -727,7 +729,7 @@
       }
 
       if (velocidades.length === 0) {
-        velError.textContent = "No se pudo estimar una velocidad razonable en el recuadro. Prueba con otra zona o un video más estable.";
+        velError.textContent = "No se pudo estimar una velocidad razonable en el recuadro. Prueba con otra zona o video más estable.";
         velError.classList.remove("hidden");
         analisisEstado.textContent = "Intenta ajustar la zona de análisis o el tramo del video.";
         btnAnalizar.disabled = false;
