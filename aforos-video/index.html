@@ -368,6 +368,11 @@
 
     let previewUrl = null;
     let roi = null;             // {x, y, w, h} en coordenadas del video
+    let roiAngle = 0;           // Rotación visual en radianes
+    // TODO: aplicar roiAngle al ROI en el análisis de OpenCV cuando se soporte rotación.
+    let roiHandleCanvasPos = null;
+    const roiHandleRadius = 10;
+    let rotandoRoi = false;
     let ultimaVelocidad = null; // m/s
 
     // --- Carga de video ---
@@ -421,6 +426,9 @@
     // --- Reset de análisis completo ---
     function resetAnalisis() {
       roi = null;
+      roiAngle = 0;
+      roiHandleCanvasPos = null;
+      rotandoRoi = false;
       ultimaVelocidad = null;
 
       if (roiInfo) roiInfo.textContent = "Sin recuadro definido todavía.";
@@ -499,24 +507,54 @@
 
       roiOverlay.addEventListener("mousedown", (e) => {
         if (roiOverlay.classList.contains("hidden")) return;
-        dibujandoRoi = true;
         const rect = roiOverlay.getBoundingClientRect();
-        roiStart = {
+        const pointer = {
           x: e.clientX - rect.left,
           y: e.clientY - rect.top,
         };
+
+        if (roi && roiHandleCanvasPos) {
+          const dx = pointer.x - roiHandleCanvasPos.x;
+          const dy = pointer.y - roiHandleCanvasPos.y;
+          if (dx * dx + dy * dy <= roiHandleRadius * roiHandleRadius) {
+            rotandoRoi = true;
+            return;
+          }
+        }
+
+        dibujandoRoi = true;
+        roiAngle = 0;
+        roiHandleCanvasPos = null;
+        roiStart = pointer;
         dibujarRectangulo(roiStart.x, roiStart.y, 0, 0);
       });
 
       roiOverlay.addEventListener("mousemove", (e) => {
-        if (!dibujandoRoi || !roiStart) return;
         const rect = roiOverlay.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+
+        if (rotandoRoi && roi) {
+          const displayRect = getDisplayRectFromRoi();
+          if (!displayRect) return;
+          const cx = displayRect.x + displayRect.w / 2;
+          const cy = displayRect.y + displayRect.h / 2;
+          roiAngle = Math.atan2(y - cy, x - cx) + Math.PI / 2;
+          renderRoiOnOverlay();
+          return;
+        }
+
+        if (!dibujandoRoi || !roiStart) return;
         dibujarRectangulo(roiStart.x, roiStart.y, x - roiStart.x, y - roiStart.y);
       });
 
       roiOverlay.addEventListener("mouseup", (e) => {
+        if (rotandoRoi) {
+          rotandoRoi = false;
+          actualizarEstadoAnalisis();
+          return;
+        }
+
         if (!dibujandoRoi || !roiStart) return;
         dibujandoRoi = false;
         const rect = roiOverlay.getBoundingClientRect();
@@ -529,6 +567,7 @@
         if (norm.w < 10 || norm.h < 10) {
           roiInfo.textContent = "Recuadro demasiado pequeño. Intenta nuevamente.";
           roi = null;
+          roiHandleCanvasPos = null;
           limpiarOverlay();
           actualizarEstadoAnalisis();
           return;
@@ -543,6 +582,7 @@
           w: Math.round(norm.w * scaleX),
           h: Math.round(norm.h * scaleY),
         };
+        roiAngle = 0;
 
         roiInfo.textContent = `Recuadro definido: ${Math.round(roi.w)} x ${Math.round(roi.h)} px en el video.`;
         analisisEstado.textContent = "Introduce el ancho real del recuadro y ejecuta el análisis.";
@@ -558,6 +598,8 @@
       roiOverlay.classList.remove("hidden");
       dibujandoRoi = false;
       roi = null;
+      roiAngle = 0;
+      roiHandleCanvasPos = null;
       limpiarOverlay();
       if (roiHandle) roiHandle.classList.add("hidden");
       roiInfo.textContent = "Haz clic y arrastra sobre el video para definir el recuadro.";
@@ -590,11 +632,56 @@
       limpiarOverlay();
       const ctx = roiOverlay.getContext("2d");
       const norm = normalizarRect(x, y, w, h);
+      if (!norm.w || !norm.h) return;
+
+      const cx = norm.x + norm.w / 2;
+      const cy = norm.y + norm.h / 2;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(roiAngle);
+
       ctx.strokeStyle = "rgba(34,197,94,0.9)";
       ctx.lineWidth = 2;
-      ctx.strokeRect(norm.x, norm.y, norm.w, norm.h);
+      ctx.strokeRect(-norm.w / 2, -norm.h / 2, norm.w, norm.h);
       ctx.fillStyle = "rgba(34,197,94,0.15)";
-      ctx.fillRect(norm.x, norm.y, norm.w, norm.h);
+      ctx.fillRect(-norm.w / 2, -norm.h / 2, norm.w, norm.h);
+
+      ctx.font = "12px 'Inter', system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillStyle = "rgba(15,118,110,0.9)";
+      ctx.fillText("Ancho (m)", 0, -norm.h / 2 - 6);
+
+      const handleY = -norm.h / 2 - 20;
+      ctx.lineWidth = 1.5;
+      ctx.fillStyle = "white";
+      ctx.strokeStyle = "rgba(15,118,110,0.9)";
+      ctx.beginPath();
+      ctx.arc(0, handleY, roiHandleRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(15,118,110,0.9)";
+      ctx.arc(0, handleY, roiHandleRadius - 4, -Math.PI * 0.15, Math.PI * 1.15);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(roiHandleRadius - 6, handleY - 2);
+      ctx.lineTo(roiHandleRadius - 2, handleY - 6);
+      ctx.lineTo(roiHandleRadius - 0.5, handleY);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(15,118,110,0.9)";
+      ctx.fill();
+
+      ctx.restore();
+
+      const cosA = Math.cos(roiAngle);
+      const sinA = Math.sin(roiAngle);
+      roiHandleCanvasPos = {
+        x: cx + 0 * cosA - handleY * sinA,
+        y: cy + 0 * sinA + handleY * cosA,
+      };
     }
 
     // --- Helpers para convertir ROI entre video y overlay ---
@@ -659,6 +746,8 @@
         w: Math.round(defaultW),
         h: Math.round(defaultH),
       };
+      roiAngle = 0;
+      roiHandleCanvasPos = null;
 
       roiOverlay.classList.remove("hidden");
       renderRoiOnOverlay();
