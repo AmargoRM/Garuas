@@ -195,6 +195,8 @@
             </div>
           </div>
 
+          <div id="velocity-status" class="mt-3 text-sm text-slate-600"></div>
+
           <!-- Resultado de velocidad -->
           <div class="border rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-900 space-y-1 hidden" id="velocidad-panel">
             <p id="velocidad-texto" class="font-medium"></p>
@@ -207,6 +209,13 @@
           <div class="border rounded-xl bg-white px-4 py-4 space-y-4 text-sm mt-4">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <h3 class="text-base font-semibold text-teal-700">2. Caudal aproximado (sección rectangular)</h3>
+              <button
+                id="btn-explicacion-metodo"
+                type="button"
+                class="ml-1 text-xs text-teal-700 underline underline-offset-2 hover:text-teal-800"
+              >
+                ¿Cómo se calcula esto?
+              </button>
               <button
                 id="btn-usar-velocidad"
                 type="button"
@@ -274,6 +283,26 @@
               Resultado aproximado solo para fines de prueba. No usar como valor oficial de diseño u operación.
             </p>
           </div>
+
+          <section id="aforos-summary" class="mt-6 rounded-2xl border border-teal-100 bg-teal-50 px-4 py-3 text-sm text-teal-900 hidden">
+            <h4 class="font-semibold mb-2">Resumen del análisis</h4>
+            <ul class="space-y-1">
+              <li><span class="font-semibold">Video:</span> <span id="summary-video-name">–</span></li>
+              <li><span class="font-semibold">Ancho de la lámina:</span> <span id="summary-width">–</span></li>
+              <li><span class="font-semibold">Profundidad media:</span> <span id="summary-depth">–</span></li>
+              <li><span class="font-semibold">Velocidad superficial estimada:</span> <span id="summary-velocity">–</span></li>
+              <li><span class="font-semibold">Caudal aproximado:</span> <span id="summary-flow">–</span></li>
+            </ul>
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+              <button id="btn-copiar-resumen" type="button" class="inline-flex items-center rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600">
+                Copiar resumen
+              </button>
+              <p id="copiar-resumen-msg" class="text-xs text-teal-900/80 hidden">Resumen copiado al portapapeles.</p>
+            </div>
+            <p class="mt-2 text-[11px] text-teal-900/70">
+              Resultado aproximado solo para fines de prueba. No usar como valor oficial de diseño u operación.
+            </p>
+          </section>
         </div>
 
         <div class="w-full max-w-2xl rounded-2xl border bg-white p-4 text-xs text-slate-600">
@@ -302,6 +331,44 @@
       </div>
     </div>
   </footer>
+
+  <div
+    id="modal-metodo"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 px-4"
+    aria-hidden="true"
+  >
+    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <div class="flex items-start justify-between gap-4">
+        <h2 class="text-lg font-semibold text-slate-900">
+          ¿Cómo se estima la velocidad y el caudal?
+        </h2>
+        <button
+          id="modal-metodo-cerrar"
+          type="button"
+          class="text-slate-500 hover:text-slate-700"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="mt-4 space-y-3 text-sm text-slate-700">
+        <p>
+          Esta herramienta analiza el movimiento superficial del agua dentro del recuadro dibujado sobre el video
+          para aproximar una velocidad media. La estimación depende fuertemente de la textura del flujo (espuma,
+          hojas, reflejos, etc.) y del ángulo de la cámara.
+        </p>
+        <p>
+          A partir de la velocidad y de la geometría definida por el usuario (ancho y profundidad aproximada), se
+          calcula el caudal Q = área × velocidad. El resultado es solo referencial y no sustituye aforos directos ni
+          métodos de diseño reconocidos.
+        </p>
+        <p class="text-xs text-slate-500">
+          Limitaciones típicas: cambio brusco de iluminación, vibración de la cámara, obstrucciones en el recuadro,
+          ángulos muy inclinados y baja resolución del video.
+        </p>
+      </div>
+    </div>
+  </div>
 
   <script>
     // Utilidad para parsear números con coma o punto
@@ -354,6 +421,7 @@
     const velTexto = document.getElementById("velocidad-texto");
     const velDetalle = document.getElementById("velocidad-detalle");
     const velError = document.getElementById("velocidad-error");
+    const velocityStatus = document.getElementById("velocity-status");
 
     // Calculadora de caudal
     const anchoCauceInput = document.getElementById("ancho-cauce");
@@ -363,6 +431,21 @@
     const btnCalcularCaudal = document.getElementById("btn-calcular-caudal");
     const calcError = document.getElementById("calc-error");
     const calcResult = document.getElementById("calc-result");
+
+    const summarySection = document.getElementById("aforos-summary");
+    const summaryVideoName = document.getElementById("summary-video-name");
+    const summaryWidth = document.getElementById("summary-width");
+    const summaryDepth = document.getElementById("summary-depth");
+    const summaryVelocity = document.getElementById("summary-velocity");
+    const summaryFlow = document.getElementById("summary-flow");
+    const btnCopiarResumen = document.getElementById("btn-copiar-resumen");
+    const copiarResumenMsg = document.getElementById("copiar-resumen-msg");
+    let copiarMsgTimeout = null;
+
+    const modalMetodo = document.getElementById("modal-metodo");
+    const btnExplicacionMetodo = document.getElementById("btn-explicacion-metodo");
+    const btnCerrarModalMetodo = document.getElementById("modal-metodo-cerrar");
+    const bodyEl = document.body;
 
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
@@ -437,6 +520,10 @@
         velError.classList.add("hidden");
         velError.textContent = "";
       }
+      if (velocityStatus) {
+        velocityStatus.textContent = "";
+        velocityStatus.className = "mt-3 text-sm text-slate-600";
+      }
       if (btnAnalizar) btnAnalizar.disabled = true;
 
       if (velocidadMediaInput) velocidadMediaInput.value = "";
@@ -446,6 +533,12 @@
       if (calcResult) {
         calcResult.classList.add("hidden");
         calcResult.textContent = "";
+      }
+      if (summarySection) {
+        summarySection.classList.add("hidden");
+      }
+      if (copiarResumenMsg) {
+        copiarResumenMsg.classList.add("hidden");
       }
 
       if (roiOverlay) {
@@ -920,6 +1013,15 @@
       velError.classList.add("hidden");
       velError.textContent = "";
       analisisEstado.textContent = "Analizando movimiento en el recuadro…";
+      if (velocityStatus) {
+        velocityStatus.innerHTML = `
+          <span class="inline-flex items-center gap-2 text-slate-600">
+            <span class="h-3 w-3 rounded-full border-2 border-slate-300 border-t-teal-600 animate-spin"></span>
+            Analizando flujo en el recuadro seleccionado…
+          </span>
+        `;
+        velocityStatus.className = "mt-3 text-sm";
+      }
       btnAnalizar.disabled = true;
 
       const procCanvas = document.createElement("canvas");
@@ -1023,6 +1125,10 @@
         velError.textContent = "No se pudo estimar una velocidad razonable en el recuadro. Prueba con otra zona o video más estable.";
         velError.classList.remove("hidden");
         analisisEstado.textContent = "Intenta ajustar la zona de análisis o el tramo del video.";
+        if (velocityStatus) {
+          velocityStatus.textContent = "No se pudo estimar la velocidad. Prueba con un tramo del video con más textura o movimiento visible.";
+          velocityStatus.className = "mt-3 text-sm text-red-600";
+        }
         btnAnalizar.disabled = false;
         return;
       }
@@ -1037,6 +1143,14 @@
       `;
       velPanel.classList.remove("hidden");
       analisisEstado.textContent = "Velocidad estimada lista. Usa el valor como referencia, no como dato de diseño.";
+      if (velocityStatus) {
+        const ventanaAnalizada = velocidades.length * dtObjetivo;
+        velocityStatus.innerHTML = `
+          <span class="text-teal-700 font-medium">Velocidad superficial estimada: ${mediana.toFixed(3)} m/s</span>
+          <span class="block text-xs text-teal-700/90">Basada en ${velocidades.length} frames analizados. Ventana analizada: ${ventanaAnalizada.toFixed(1)} s · Confianza: media.</span>
+        `;
+        velocityStatus.className = "mt-3 text-sm";
+      }
       btnAnalizar.disabled = false;
       actualizarEstadoAnalisis();
     }
@@ -1085,6 +1199,9 @@
           calcError.classList.remove("hidden");
           calcResult.classList.add("hidden");
           calcResult.textContent = "";
+          if (summarySection) {
+            summarySection.classList.add("hidden");
+          }
           return;
         }
 
@@ -1098,8 +1215,115 @@
           <p><span class="font-semibold">Caudal aproximado:</span> ${caudalM3s.toFixed(3)} m³/s (${caudalLs.toFixed(1)} L/s)</p>
         `;
         calcResult.classList.remove("hidden");
+
+        actualizarResumen({
+          ancho,
+          profundidad,
+          velocidad,
+          caudalM3s,
+          caudalLs,
+        });
       });
     }
+
+    function actualizarResumen({ ancho, profundidad, velocidad, caudalM3s, caudalLs }) {
+      if (!summarySection || !summaryVideoName || !summaryWidth || !summaryDepth || !summaryVelocity || !summaryFlow) return;
+
+      const fileName = videoInput && videoInput.files && videoInput.files[0] ? videoInput.files[0].name : "sin archivo";
+      summaryVideoName.textContent = fileName;
+      summaryWidth.textContent = `${ancho.toFixed(3)} m`;
+      summaryDepth.textContent = profundidad > 0 ? `${profundidad.toFixed(3)} m` : "–";
+      summaryVelocity.textContent = `${velocidad.toFixed(3)} m/s`;
+      summaryFlow.textContent = `${caudalM3s.toFixed(3)} m³/s (${caudalLs.toFixed(1)} L/s)`;
+
+      summarySection.classList.remove("hidden");
+
+      if (copiarResumenMsg) {
+        copiarResumenMsg.classList.add("hidden");
+      }
+    }
+
+    if (btnCopiarResumen && summarySection) {
+      btnCopiarResumen.addEventListener("click", async () => {
+        if (copiarResumenMsg) {
+          copiarResumenMsg.classList.add("hidden");
+          if (copiarMsgTimeout) {
+            clearTimeout(copiarMsgTimeout);
+          }
+        }
+
+        const texto = [
+          `Video: ${summaryVideoName ? summaryVideoName.textContent : ""}`,
+          `Ancho de la lámina: ${summaryWidth ? summaryWidth.textContent : ""}`,
+          `Profundidad media: ${summaryDepth ? summaryDepth.textContent : ""}`,
+          `Velocidad superficial estimada: ${summaryVelocity ? summaryVelocity.textContent : ""}`,
+          `Caudal aproximado: ${summaryFlow ? summaryFlow.textContent : ""}`,
+        ].join("\n");
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(texto);
+            if (copiarResumenMsg) {
+              copiarResumenMsg.classList.remove("hidden");
+              copiarResumenMsg.classList.remove("text-red-600");
+              copiarResumenMsg.textContent = "Resumen copiado al portapapeles.";
+              copiarMsgTimeout = window.setTimeout(() => {
+                copiarResumenMsg.classList.add("hidden");
+              }, 2500);
+            }
+          } else {
+            throw new Error("Clipboard API no disponible");
+          }
+        } catch (err) {
+          if (copiarResumenMsg) {
+            copiarResumenMsg.textContent = "No se pudo copiar. Intenta de nuevo.";
+            copiarResumenMsg.classList.remove("hidden");
+            copiarResumenMsg.classList.add("text-red-600");
+          }
+        }
+      });
+    }
+
+    function toggleModalMetodo(show) {
+      if (!modalMetodo) return;
+      if (show) {
+        modalMetodo.classList.remove("hidden");
+        modalMetodo.classList.add("flex");
+        modalMetodo.setAttribute("aria-hidden", "false");
+        if (bodyEl) {
+          bodyEl.classList.add("overflow-hidden");
+        }
+      } else {
+        modalMetodo.classList.add("hidden");
+        modalMetodo.classList.remove("flex");
+        modalMetodo.setAttribute("aria-hidden", "true");
+        if (bodyEl) {
+          bodyEl.classList.remove("overflow-hidden");
+        }
+      }
+    }
+
+    if (btnExplicacionMetodo) {
+      btnExplicacionMetodo.addEventListener("click", () => toggleModalMetodo(true));
+    }
+
+    if (btnCerrarModalMetodo) {
+      btnCerrarModalMetodo.addEventListener("click", () => toggleModalMetodo(false));
+    }
+
+    if (modalMetodo) {
+      modalMetodo.addEventListener("click", (e) => {
+        if (e.target === modalMetodo) {
+          toggleModalMetodo(false);
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalMetodo && !modalMetodo.classList.contains("hidden")) {
+        toggleModalMetodo(false);
+      }
+    });
   </script>
 </body>
 </html>
