@@ -1,135 +1,291 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex,nofollow" />
-  <title>Política de Privacidad – Garúa Aforos</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="Política de Privacidad de Garúa Aforos, aplicación móvil para estimaciones técnicas de caudal en campo.">
+  <title>Política de Privacidad — Garúa Aforos</title>
   <style>
     :root {
-      --bg: #f7f9fc;
-      --card: #ffffff;
-      --text: #1f2933;
-      --muted: #5f6c7b;
-      --brand: #163d60;
-      --brand-soft: #e8eef5;
-      --border: #d8e0ea;
+      color-scheme: light;
+      --background: #f4f7f6;
+      --surface: #ffffff;
+      --text: #1d2b28;
+      --muted: #52645f;
+      --brand: #155e54;
+      --brand-dark: #0d4941;
+      --border: #d8e2df;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--background);
       color: var(--text);
-      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
-      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
     }
 
-    .container {
-      width: min(1080px, 92vw);
-      margin: 0 auto;
-      padding: 2.25rem 0 2.5rem;
+    main {
+      width: min(900px, calc(100% - 2rem));
+      margin: 2rem auto;
+      padding: clamp(1.25rem, 4vw, 3rem);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      box-shadow: 0 0.5rem 2rem rgba(22, 48, 42, 0.08);
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.15rem;
+    header {
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1,
+    h2 {
+      color: var(--brand-dark);
+      line-height: 1.25;
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(1.3rem, 2.4vw, 1.9rem);
-      font-weight: 650;
-      letter-spacing: 0.01em;
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.8rem, 5vw, 2.75rem);
+    }
+
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.25rem, 3vw, 1.55rem);
+    }
+
+    p,
+    ul {
+      margin: 0 0 1rem;
+    }
+
+    ul {
+      padding-left: 1.4rem;
+    }
+
+    li + li {
+      margin-top: 0.4rem;
+    }
+
+    a {
       color: var(--brand);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.16em;
+    }
+
+    a:hover,
+    a:focus-visible {
+      color: var(--brand-dark);
+    }
+
+    .date {
+      color: var(--muted);
+      font-weight: 600;
     }
 
     .download {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--brand);
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--brand);
+      border-radius: 0.4rem;
+      font-weight: 700;
       text-decoration: none;
-      padding: 0.56rem 0.85rem;
-      border-radius: 0.65rem;
-      font-size: 0.93rem;
-      font-weight: 560;
-      transition: all .2s ease;
     }
 
-    .download:hover,
-    .download:focus-visible {
-      border-color: #b7c7d8;
-      background: var(--brand-soft);
-      outline: none;
+    section {
+      padding-top: 1.75rem;
     }
 
-    .subtitle {
-      margin: 0 0 1rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .viewer-shell {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 0.95rem;
-      overflow: hidden;
-      box-shadow: 0 10px 32px rgba(18, 43, 66, 0.08);
-    }
-
-    iframe {
-      width: 100%;
-      border: 0;
-      height: 78vh;
-      min-height: 520px;
-      background: #f0f4f9;
-    }
-
-    .fallback {
-      padding: 1rem;
-      font-size: 0.95rem;
-      color: var(--muted);
+    footer {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
       border-top: 1px solid var(--border);
-      background: #fbfdff;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
 
-    @media (max-width: 720px) {
-      .container { padding-top: 1.3rem; }
-      iframe {
-        height: 72vh;
-        min-height: 440px;
+    @media (max-width: 600px) {
+      main {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
       }
     }
   </style>
 </head>
 <body>
-  <main class="container" aria-label="Política de Privacidad Garúa Aforos">
-    <div class="header">
-      <h1>Política de Privacidad – Garúa Aforos</h1>
-      <a class="download" href="./politica-privacidad-garua-aforos.pdf" download>
-        Descargar PDF
-      </a>
-    </div>
+  <main>
+    <header>
+      <h1>Política de Privacidad — Garúa Aforos</h1>
+      <p class="date">Última actualización: 12 de junio de 2026</p>
+      <p>Garúa Aforos es una aplicación móvil desarrollada por Garúa para apoyar estimaciones técnicas de caudal en campo mediante dos métodos: aforo con video y aforo volumétrico con cronómetro. Esta Política de Privacidad explica cómo la aplicación accede, procesa, almacena y protege la información utilizada durante su funcionamiento.</p>
+      <a class="download" href="./Politica_Privacidad_Garua_Aforos_2026-06-12.pdf" download>Descargar PDF</a>
+    </header>
 
-    <p class="subtitle">Documento legal oficial para Google Play Console.</p>
-
-    <section class="viewer-shell" aria-label="Visor de política de privacidad">
-      <iframe
-        title="Política de Privacidad – Garúa Aforos"
-        src="./politica-privacidad-garua-aforos.pdf#view=FitH"
-        loading="lazy">
-      </iframe>
-      <div class="fallback">
-        Si tu navegador no muestra el visor PDF, puedes descargar el archivo con el botón superior.
-      </div>
+    <section>
+      <h2>1. Responsable</h2>
+      <p><strong>Responsable:</strong> Garúa</p>
+      <p><strong>Correo de contacto:</strong> <a href="mailto:info@garuas.com">info@garuas.com</a></p>
+      <p><strong>Sitio web:</strong> <a href="https://garuas.com/">garuas.com</a></p>
     </section>
+
+    <section>
+      <h2>2. Información que puede utilizar la aplicación</h2>
+      <p>Garúa Aforos puede utilizar únicamente la información necesaria para ejecutar sus funciones técnicas dentro del dispositivo del usuario.</p>
+      <p>La aplicación puede procesar:</p>
+      <ul>
+        <li>Videos seleccionados manualmente por el usuario desde el dispositivo, cuando se utiliza el módulo de aforo con video.</li>
+        <li>Datos ingresados manualmente por el usuario, como volumen del recipiente, tiempos medidos, nombre de la fuente hídrica y observaciones de campo, cuando se utiliza el módulo de aforo volumétrico.</li>
+        <li>Parámetros técnicos ingresados por el usuario para estimar velocidad superficial, área hidráulica y caudal.</li>
+        <li>Reportes generados por el usuario en formato de imagen PNG.</li>
+      </ul>
+      <p>La aplicación no solicita ni recopila nombre personal del usuario, correo electrónico, número de teléfono, ubicación GPS, contactos, fotografías personales, información financiera, identificadores publicitarios ni datos de cuenta.</p>
+      <p>Si el usuario decide escribir información personal dentro de campos libres, como observaciones o nombre de fuente, dicha información permanece localmente en el dispositivo y no se transmite a servidores externos durante el uso normal de la aplicación.</p>
+    </section>
+
+    <section>
+      <h2>3. Procesamiento local de la información</h2>
+      <p>El procesamiento de la información ocurre localmente en el dispositivo del usuario.</p>
+      <p>Esto incluye:</p>
+      <ul>
+        <li>Selección y revisión de videos elegidos manualmente por el usuario.</li>
+        <li>Procesamiento visual local para apoyar la estimación de velocidad superficial, cuando el módulo correspondiente esté disponible en la versión instalada.</li>
+        <li>Cálculos hidráulicos realizados a partir de parámetros ingresados por el usuario.</li>
+        <li>Medición de tiempos en el módulo volumétrico.</li>
+        <li>Cálculo de caudal volumétrico.</li>
+        <li>Generación de reportes técnicos en formato PNG.</li>
+      </ul>
+      <p>Garúa Aforos no transmite videos, tiempos, observaciones, resultados ni reportes a servidores externos durante el uso normal de la aplicación.</p>
+    </section>
+
+    <section>
+      <h2>4. Aforo con video</h2>
+      <p>En el módulo de aforo con video, el usuario selecciona manualmente un archivo de video desde su dispositivo. La aplicación utiliza ese video para apoyar la estimación de velocidad superficial y caudal.</p>
+      <p>La aplicación no accede de forma general a toda la galería del usuario. El acceso se limita al archivo seleccionado por el usuario mediante el selector del sistema Android.</p>
+      <p>Los videos seleccionados no se suben a servidores de Garúa ni a servicios de terceros durante el uso normal de la aplicación.</p>
+    </section>
+
+    <section>
+      <h2>5. Aforo volumétrico</h2>
+      <p>En el módulo de aforo volumétrico, el usuario puede ingresar el volumen de un recipiente, registrar tiempos de llenado y agregar información opcional como el nombre de la fuente hídrica u observaciones de campo.</p>
+      <p>Estos datos se utilizan únicamente para calcular el caudal estimado y generar un reporte local. La aplicación no transmite esta información a servidores externos.</p>
+    </section>
+
+    <section>
+      <h2>6. Reportes y almacenamiento local</h2>
+      <p>Garúa Aforos permite generar reportes en formato de imagen PNG. Estos reportes pueden guardarse localmente en la galería o almacenamiento multimedia del dispositivo.</p>
+      <p>El guardado del reporte ocurre únicamente cuando el usuario solicita generar o guardar el reporte.</p>
+      <p>La aplicación no almacena reportes en servidores propios ni de terceros. Los archivos generados quedan bajo control del usuario en su propio dispositivo y pueden ser eliminados en cualquier momento desde la galería o el administrador de archivos del sistema.</p>
+    </section>
+
+    <section>
+      <h2>7. Datos que no se recolectan</h2>
+      <p>Garúa Aforos no recolecta ni comparte:</p>
+      <ul>
+        <li>Ubicación GPS.</li>
+        <li>Datos de contacto.</li>
+        <li>Cámara en tiempo real.</li>
+        <li>Micrófono.</li>
+        <li>Contactos del dispositivo.</li>
+        <li>Cuentas de usuario.</li>
+        <li>Identificadores publicitarios.</li>
+        <li>Información financiera.</li>
+        <li>Datos de salud.</li>
+        <li>Datos biométricos.</li>
+        <li>Mensajes o comunicaciones personales.</li>
+        <li>Analítica de uso.</li>
+        <li>Datos para publicidad.</li>
+      </ul>
+      <p>La aplicación no incluye anuncios, SDKs publicitarios, SDKs de analítica ni herramientas de rastreo de terceros.</p>
+    </section>
+
+    <section>
+      <h2>8. Uso de internet y enlaces externos</h2>
+      <p>Garúa Aforos no utiliza internet para transmitir datos del usuario, subir videos, enviar reportes ni cargar motores de análisis externos.</p>
+      <p>La aplicación puede mostrar enlaces informativos, como la política de privacidad, el sitio web de Garúa o información de licencias de software. Cuando el usuario abre uno de estos enlaces, se utiliza el navegador web del sistema o una aplicación externa compatible.</p>
+      <p>La navegación en esos sitios externos queda sujeta a las políticas de privacidad de dichos sitios o servicios.</p>
+    </section>
+
+    <section>
+      <h2>9. Permisos del dispositivo</h2>
+      <p>Garúa Aforos utiliza únicamente los accesos necesarios para su funcionamiento técnico.</p>
+      <p>Según la versión de Android y la configuración del dispositivo, la aplicación puede utilizar:</p>
+      <ul>
+        <li><strong>Selector de archivos del sistema:</strong> para que el usuario elija manualmente un video.</li>
+        <li><strong>Acceso de guardado multimedia mediante las APIs del sistema Android:</strong> para guardar reportes PNG en la galería o almacenamiento multimedia.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>10. Compartición de información</h2>
+      <p>Garúa Aforos no vende, alquila, comercializa ni comparte información del usuario con terceros.</p>
+      <p>La aplicación no transmite automáticamente videos, tiempos, observaciones, resultados, reportes ni parámetros técnicos a servidores externos.</p>
+    </section>
+
+    <section>
+      <h2>11. Seguridad y manejo de datos</h2>
+      <p>La información procesada por Garúa Aforos se mantiene localmente en el dispositivo del usuario durante el uso normal de la aplicación.</p>
+      <p>La aplicación está diseñada para minimizar el acceso a datos personales y evitar permisos innecesarios. Los reportes generados quedan almacenados localmente en el dispositivo del usuario, bajo su propio control.</p>
+    </section>
+
+    <section>
+      <h2>12. Retención y eliminación de datos</h2>
+      <p>Garúa Aforos no conserva datos del usuario en servidores.</p>
+      <p>Los reportes PNG generados quedan guardados en el dispositivo del usuario únicamente cuando el usuario decide generarlos o guardarlos. El usuario puede eliminarlos en cualquier momento desde la galería, el administrador de archivos o las herramientas del sistema operativo.</p>
+      <p>Los videos seleccionados por el usuario no son copiados a servidores externos por la aplicación.</p>
+    </section>
+
+    <section>
+      <h2>13. Limitaciones técnicas</h2>
+      <p>Los resultados generados por Garúa Aforos son estimaciones técnicas de campo basadas en videos seleccionados, parámetros ingresados por el usuario y mediciones volumétricas manuales.</p>
+      <p>La aplicación no sustituye mediciones hidráulicas oficiales, calibradas, certificadas o realizadas con instrumentación especializada. Los resultados deben interpretarse como referencias de apoyo técnico y no como certificaciones oficiales de caudal.</p>
+      <p>La precisión de los resultados puede verse afectada por condiciones de campo, calidad del video, iluminación, turbulencia, selección del área de análisis, profundidad ingresada, volumen del recipiente, variabilidad de los tiempos medidos y otros factores técnicos.</p>
+    </section>
+
+    <section>
+      <h2>14. Servicios y bibliotecas de terceros</h2>
+      <p>Garúa Aforos puede utilizar OpenCV, una biblioteca de visión por computadora de código abierto distribuida bajo la Licencia Apache 2.0, para apoyar funciones locales de procesamiento visual cuando esté incluida en la versión instalada de la aplicación.</p>
+      <p>La aplicación no utiliza OpenCV ni otras bibliotecas para transmitir datos personales a terceros.</p>
+      <p>Garúa Aforos no integra SDKs de analítica, publicidad, redes sociales ni rastreo de usuarios.</p>
+    </section>
+
+    <section>
+      <h2>15. Privacidad de menores</h2>
+      <p>Garúa Aforos es una herramienta de apoyo técnico para uso profesional, académico o de campo. No está dirigida específicamente a menores de edad y no recopila intencionalmente datos personales de menores.</p>
+    </section>
+
+    <section>
+      <h2>16. Cambios en esta política</h2>
+      <p>Garúa podrá actualizar esta Política de Privacidad cuando sea necesario para reflejar cambios técnicos, funcionales, legales o regulatorios de la aplicación.</p>
+      <p>La fecha de última actualización se indica al inicio de esta política.</p>
+    </section>
+
+    <section>
+      <h2>17. Contacto</h2>
+      <p>Para consultas relacionadas con esta Política de Privacidad o el tratamiento de información en Garúa Aforos, puede contactar a:</p>
+      <p><strong>Garúa</strong></p>
+      <p><strong>Correo:</strong> <a href="mailto:info@garuas.com">info@garuas.com</a></p>
+      <p><strong>Sitio web:</strong> <a href="https://garuas.com/">garuas.com</a></p>
+    </section>
+
+    <footer>
+      <p>Esta política está disponible públicamente en <a href="https://garuas.com/privacy-aforos/">garuas.com/privacy-aforos/</a>.</p>
+    </footer>
   </main>
 </body>
 </html>
