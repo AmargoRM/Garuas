@@ -132,9 +132,9 @@
   <main>
     <header>
       <h1>Política de Privacidad — Garúa Aforos</h1>
-      <p class="date">Última actualización: 10 de julio de 2026</p>
+      <p class="date">Última actualización: 23 de octubre de 2026</p>
       <p>Garúa Aforos es una aplicación móvil desarrollada por Garúa para apoyar estimaciones técnicas de caudal en campo mediante dos métodos: aforo con video y aforo volumétrico con cronómetro. Esta Política de Privacidad explica cómo la aplicación accede, procesa, almacena y protege la información utilizada durante su funcionamiento.</p>
-      <a class="download" href="./Politica_Privacidad_Garua_Aforos_2026-07-10.pdf" download>Descargar PDF</a>
+      <a class="download" href="./Politica_Privacidad_Garua_Aforos_2026-10-23.pdf" download>Descargar PDF</a>
     </header>
 
     <section>
@@ -149,10 +149,11 @@
       <p>Garúa Aforos puede utilizar únicamente la información necesaria para ejecutar sus funciones técnicas dentro del dispositivo del usuario.</p>
       <p>La aplicación puede procesar:</p>
       <ul>
-        <li>Videos seleccionados manualmente por el usuario desde el dispositivo, cuando se utiliza el módulo de aforo con video.</li>
+        <li>Videos seleccionados manualmente por el usuario desde el dispositivo, o grabados por el usuario con la aplicación de Cámara del teléfono, cuando se utiliza el módulo de aforo con video.</li>
         <li>Datos ingresados manualmente por el usuario, como volumen del recipiente, tiempos medidos, nombre de la fuente hídrica y observaciones de campo, cuando se utiliza el módulo de aforo volumétrico.</li>
         <li>Parámetros técnicos ingresados por el usuario para estimar velocidad superficial, área hidráulica y caudal.</li>
         <li>Reportes generados por el usuario en formato de imagen PNG.</li>
+        <li>Historial de los últimos 10 aforos guardados (fecha, método, nombre de la fuente, caudal e imagen del reporte), almacenado dentro de la propia aplicación.</li>
       </ul>
       <p>La aplicación no solicita ni recopila nombre personal del usuario, correo electrónico, número de teléfono, ubicación GPS, contactos, fotografías personales, información financiera, identificadores publicitarios ni datos de cuenta.</p>
       <p>Si el usuario decide escribir información personal dentro de campos libres, como observaciones o nombre de fuente, dicha información permanece localmente en el dispositivo y no se transmite a servidores externos durante el uso normal de la aplicación.</p>
@@ -163,7 +164,7 @@
       <p>El procesamiento de la información ocurre localmente en el dispositivo del usuario.</p>
       <p>Esto incluye:</p>
       <ul>
-        <li>Selección y revisión de videos elegidos manualmente por el usuario.</li>
+        <li>Selección o grabación y revisión de videos elegidos manualmente por el usuario.</li>
         <li>Procesamiento visual local para apoyar la estimación de velocidad superficial, cuando el módulo correspondiente esté disponible en la versión instalada.</li>
         <li>Cálculos hidráulicos realizados a partir de parámetros ingresados por el usuario.</li>
         <li>Medición de tiempos en el módulo volumétrico.</li>
@@ -178,12 +179,14 @@
       <p>En el módulo de aforo con video, el usuario selecciona manualmente un archivo de video desde su dispositivo. La aplicación utiliza ese video para apoyar la estimación de velocidad superficial y caudal.</p>
       <p>La aplicación no accede de forma general a toda la galería del usuario. El acceso se limita al archivo seleccionado por el usuario mediante el selector del sistema Android.</p>
       <p>Los videos seleccionados no se suben a servidores de Garúa ni a servicios de terceros durante el uso normal de la aplicación.</p>
+      <p>El usuario también puede grabar un video nuevo desde la aplicación. En ese caso, Garúa Aforos abre la aplicación de Cámara del teléfono, que es la que realiza la grabación. Garúa Aforos no solicita el permiso de cámara ni accede a la cámara directamente. El video grabado se guarda en el almacenamiento multimedia del dispositivo, en la carpeta Movies/Garua, y queda bajo control del usuario.</p>
     </section>
 
     <section>
       <h2>5. Aforo volumétrico</h2>
       <p>En el módulo de aforo volumétrico, el usuario puede ingresar el volumen de un recipiente, registrar tiempos de llenado y agregar información opcional como el nombre de la fuente hídrica u observaciones de campo.</p>
       <p>Estos datos se utilizan únicamente para calcular el caudal estimado y generar un reporte local. La aplicación no transmite esta información a servidores externos.</p>
+      <p>El verificador de caudal, que compara un caudal deseado con una medición volumétrica, utiliza el mismo tipo de datos y los procesa de la misma forma, solo dentro del dispositivo.</p>
     </section>
 
     <section>
@@ -191,6 +194,8 @@
       <p>Garúa Aforos permite generar reportes en formato de imagen PNG. Estos reportes pueden guardarse localmente en la galería o almacenamiento multimedia del dispositivo.</p>
       <p>El guardado del reporte ocurre únicamente cuando el usuario solicita generar o guardar el reporte.</p>
       <p>La aplicación no almacena reportes en servidores propios ni de terceros. Los archivos generados quedan bajo control del usuario en su propio dispositivo y pueden ser eliminados en cualquier momento desde la galería o el administrador de archivos del sistema.</p>
+      <p><strong>Historial:</strong> al guardar un reporte, la aplicación conserva una copia en su historial interno, junto con la fecha, el método, el nombre de la fuente y el caudal calculado. El historial guarda como máximo los últimos 10 aforos, se almacena en el espacio privado de la aplicación (no accesible para otras aplicaciones) y no sale del dispositivo.</p>
+      <p><strong>Compartir:</strong> el usuario puede enviar un reporte mediante el menú Compartir de Android. Solo se comparte la imagen del reporte, únicamente cuando el usuario lo solicita y a la aplicación que el usuario elige (por ejemplo, correo o mensajería).</p>
     </section>
 
     <section>
@@ -228,19 +233,23 @@
       <ul>
         <li><strong>Selector de archivos del sistema:</strong> para que el usuario elija manualmente un video.</li>
         <li><strong>Acceso de guardado multimedia mediante las APIs del sistema Android:</strong> para guardar reportes PNG en la galería o almacenamiento multimedia.</li>
+        <li><strong>Aplicación de Cámara del sistema:</strong> para que el usuario grabe un video, si así lo decide. La grabación la realiza la aplicación de Cámara del teléfono; Garúa Aforos no solicita el permiso de cámara.</li>
+        <li><strong>Menú Compartir de Android:</strong> para que el usuario envíe un reporte a la aplicación que elija. No requiere permisos adicionales.</li>
       </ul>
+      <p>La aplicación no solicita permisos de ubicación, cámara, micrófono, contactos ni almacenamiento amplio innecesario.</p>
     </section>
 
     <section>
       <h2>10. Compartición de información</h2>
       <p>Garúa Aforos no vende, alquila, comercializa ni comparte información del usuario con terceros.</p>
       <p>La aplicación no transmite automáticamente videos, tiempos, observaciones, resultados, reportes ni parámetros técnicos a servidores externos.</p>
+      <p>Cuando el usuario decide compartir un reporte, la imagen se envía únicamente a la aplicación que el usuario elige en el menú Compartir de Android. Desde ese momento, el tratamiento de esa imagen queda sujeto a las políticas de privacidad de dicha aplicación o servicio.</p>
     </section>
 
     <section>
       <h2>11. Seguridad y manejo de datos</h2>
       <p>La información procesada por Garúa Aforos se mantiene localmente en el dispositivo del usuario durante el uso normal de la aplicación.</p>
-      <p>La aplicación está diseñada para minimizar el acceso a datos personales y evitar permisos innecesarios. Los reportes generados quedan almacenados localmente en el dispositivo del usuario, bajo su propio control.</p>
+      <p>La aplicación está diseñada para minimizar el acceso a datos personales y evitar permisos innecesarios. Los reportes generados quedan almacenados localmente en el dispositivo del usuario, bajo su propio control. La copia de seguridad automática de Android está desactivada, por lo que los datos internos de la aplicación no se copian a la nube.</p>
     </section>
 
     <section>
@@ -248,11 +257,13 @@
       <p>Garúa Aforos no conserva datos del usuario en servidores.</p>
       <p>Los reportes PNG generados quedan guardados en el dispositivo del usuario únicamente cuando el usuario decide generarlos o guardarlos. El usuario puede eliminarlos en cualquier momento desde la galería, el administrador de archivos o las herramientas del sistema operativo.</p>
       <p>Los videos seleccionados por el usuario no son copiados a servidores externos por la aplicación.</p>
+      <p>Los videos grabados con la aplicación de Cámara quedan guardados en el dispositivo del usuario (carpeta Movies/Garua) y pueden eliminarse en cualquier momento desde la galería o el administrador de archivos.</p>
+      <p>El historial de aforos se guarda solo dentro de la aplicación y conserva como máximo los últimos 10 aforos. El usuario puede eliminar cualquier aforo del historial desde la propia aplicación, y todo el historial se borra al desinstalar la aplicación.</p>
     </section>
 
     <section>
       <h2>13. Limitaciones técnicas</h2>
-      <p>Los resultados generados por Garúa Aforos son estimaciones técnicas de campo basadas en videos seleccionados, parámetros ingresados por el usuario y mediciones volumétricas manuales.</p>
+      <p>Los resultados generados por Garúa Aforos son estimaciones técnicas de campo basadas en videos seleccionados o grabados, parámetros ingresados por el usuario y mediciones volumétricas manuales.</p>
       <p>La aplicación no sustituye mediciones hidráulicas oficiales, calibradas, certificadas o realizadas con instrumentación especializada. Los resultados deben interpretarse como referencias de apoyo técnico y no como certificaciones oficiales de caudal.</p>
       <p>La precisión de los resultados puede verse afectada por condiciones de campo, calidad del video, iluminación, turbulencia, selección del área de análisis, profundidad ingresada, volumen del recipiente, variabilidad de los tiempos medidos y otros factores técnicos.</p>
     </section>
@@ -260,7 +271,6 @@
     <section>
       <h2>14. Servicios y bibliotecas de terceros</h2>
       <p>El análisis de velocidad se realiza con un motor de procesamiento propio, desarrollado de forma independiente y ejecutado íntegramente en el dispositivo. La aplicación no integra bibliotecas de terceros que recopilen o transmitan datos, ni SDKs de analítica, publicidad o rastreo.</p>
-      <p>Garúa Aforos no integra SDKs de analítica, publicidad, redes sociales ni rastreo de usuarios.</p>
     </section>
 
     <section>
